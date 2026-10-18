@@ -1,5 +1,14 @@
 # Bare-muon W/Z production with lepton fragmentation — implementation plan
 
+Proposed research extensions (18 October 2026): the
+[extension notes](docs/manual/extensions.md) distinguish neutral-current NNLO
+QED + collinear NLL matching from the dedicated W calculation, endpoint
+resummation from the existing endpoint quadrature, and coherent soft/collinear
+matching from cone-plus-veto dressed-electron predictions. They specify
+overlap subtraction, physical veto efficiency, pair/axis definitions and
+validation gates. These are proposals; no new resummation or production run
+is enabled by the notes.
+
 Architecture implementation (0.27): analytic projected hard actions, exact
 fraction-pair stencils, reusable compiled measurements, deterministic threaded
 replay, full/block/selected/diagonal covariance, shared C/Python measurement

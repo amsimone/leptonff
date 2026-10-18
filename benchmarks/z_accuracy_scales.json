@@ -1,0 +1,192 @@
+{
+  "schema": "leptonff-z-accuracy-comparison-v1",
+  "qcd": "Born",
+  "scales": [
+    0.5,
+    1.0,
+    2.0
+  ],
+  "convention": "unitary, fixed-alpha photonic; pole-mass fragmentation scale",
+  "scale_uncertainty": "three-point envelope, not a statistical confidence interval",
+  "numerical_uncertainty": "sum of absolute grid and quadrature refinement shifts; not a rigorous bound",
+  "inputs": [
+    {
+      "0.5": {
+        "path": "results/born-fsr/z-accuracy-scales/fine/z-analytic-801-muf0p5.json",
+        "sha256": "4d5f1631b8b61e2380b7e3a632cc94348a327baea7e7fe763b5be54a0750dddd"
+      },
+      "1.0": {
+        "path": "results/born-fsr/z-accuracy-scales/fine/z-analytic-801-muf1.json",
+        "sha256": "2cfd34cd08f7025fd86db5b3e7dab79b6dc58ce23df088a00868314084bd769e"
+      },
+      "2.0": {
+        "path": "results/born-fsr/z-accuracy-scales/fine/z-analytic-801-muf2.json",
+        "sha256": "7f9a62842f24fca3fe8a5c3325e661c01e0f220b29886b0bc49ede067de4e0c4"
+      }
+    },
+    {
+      "0.5": {
+        "path": "results/born-fsr/z-accuracy-scales/grid-control/z-analytic-801-muf0p5.json",
+        "sha256": "9535dc38112bd1b20607cd659b9b9fc48417033575e8220e8b16b6bb17b8a723"
+      },
+      "1.0": {
+        "path": "results/born-fsr/z-accuracy-scales/grid-control/z-analytic-801-muf1.json",
+        "sha256": "e932fab9baf73aefa63aa3bedf69a8556919f9a390f9a09e3e62ae7b38ae897b"
+      },
+      "2.0": {
+        "path": "results/born-fsr/z-accuracy-scales/grid-control/z-analytic-801-muf2.json",
+        "sha256": "1a3e62366a8d4116c4f16cf04187753e3e2cedcfdeb003aa465c9e36c1bfb90c"
+      }
+    },
+    {
+      "0.5": {
+        "path": "results/born-fsr/z-accuracy-scales/quadrature-control/z-analytic-801-muf0p5.json",
+        "sha256": "a2f83ce81842e77c0e564a8f8acee05481f7908ef3af1b9aee8e19f8e0e29fee"
+      },
+      "1.0": {
+        "path": "results/born-fsr/z-accuracy-scales/quadrature-control/z-analytic-801-muf1.json",
+        "sha256": "b8aedde8caa39db6d0f5d103d92c09b0d1a18d3b713c2fce3c99d009b2bf510c"
+      },
+      "2.0": {
+        "path": "results/born-fsr/z-accuracy-scales/quadrature-control/z-analytic-801-muf2.json",
+        "sha256": "ce7812f2afdbed0d02de3fd02f737430719af12279d0ce37bda08c8e5810e223"
+      }
+    }
+  ],
+  "checks": {
+    "max_order_alpha_scale_spread": 3.3306690738754696e-15,
+    "max_born_scale_spread": 0.0,
+    "max_nll_ll_numerical_estimate": 3.340133947205004e-09,
+    "resolved_nll_ll_bins": 264,
+    "mass_bins": 264
+  },
+  "peak_90_92": {
+    "0.5": {
+      "born": 677.9347530280146,
+      "order_alpha": 583.1746419164006,
+      "matched_ll": 588.2857233775386,
+      "matched_nll": 588.3598782232506,
+      "ratios": {
+        "fo_born": {
+          "value": -0.13977762710698238,
+          "mc_error": 0.0
+        },
+        "ll_born": {
+          "value": -0.13223843334488472,
+          "mc_error": 0.0
+        },
+        "nll_born": {
+          "value": -0.1321290498896469,
+          "mc_error": 0.0
+        },
+        "ll_fo": {
+          "value": 0.008764238178021966,
+          "mc_error": 0.0
+        },
+        "nll_fo": {
+          "value": 0.008891395362820464,
+          "mc_error": 0.0
+        },
+        "nll_ll": {
+          "value": 0.00012605243126806442,
+          "mc_error": 0.0
+        }
+      }
+    },
+    "1.0": {
+      "born": 677.9347530280146,
+      "order_alpha": 583.1746419164007,
+      "matched_ll": 588.2098643555938,
+      "matched_nll": 588.2911151273854,
+      "ratios": {
+        "fo_born": {
+          "value": -0.13977762710698227,
+          "mc_error": 0.0
+        },
+        "ll_born": {
+          "value": -0.13235033057630108,
+          "mc_error": 0.0
+        },
+        "nll_born": {
+          "value": -0.1322304801461105,
+          "mc_error": 0.0
+        },
+        "ll_fo": {
+          "value": 0.008634158753279442,
+          "mc_error": 0.0
+        },
+        "nll_fo": {
+          "value": 0.008773483692931627,
+          "mc_error": 0.0
+        },
+        "nll_ll": {
+          "value": 0.00013813228358650065,
+          "mc_error": 0.0
+        }
+      }
+    },
+    "2.0": {
+      "born": 677.9347530280146,
+      "order_alpha": 583.1746419164007,
+      "matched_ll": 588.0044685300675,
+      "matched_nll": 588.0925548615862,
+      "ratios": {
+        "fo_born": {
+          "value": -0.13977762710698227,
+          "mc_error": 0.0
+        },
+        "ll_born": {
+          "value": -0.13265330342820014,
+          "mc_error": 0.0
+        },
+        "nll_born": {
+          "value": -0.1325233700811851,
+          "mc_error": 0.0
+        },
+        "ll_fo": {
+          "value": 0.008281955809661401,
+          "mc_error": 0.0
+        },
+        "nll_fo": {
+          "value": 0.008433002040391324,
+          "mc_error": 0.0
+        },
+        "nll_ll": {
+          "value": 0.00014980554780308353,
+          "mc_error": 0.0
+        }
+      }
+    }
+  },
+  "previous_central": {
+    "path": "results/born-fsr/z-refinement/z-analytic-641.json",
+    "sha256": "c9babd658503b7063c492fd7809f46f1a0bd2a2474a911e3049da880a2c7c903",
+    "max_ratio_shifts": {
+      "fo_born": 6.121555711890991e-06,
+      "ll_born": 5.236954406351302e-06,
+      "nll_born": 5.235120441371421e-06,
+      "ll_fo": 3.963435493137268e-06,
+      "nll_fo": 3.961629190252225e-06,
+      "nll_ll": 3.0065606670959255e-09
+    }
+  },
+  "results_directory": "results/born-fsr/z-accuracy-scales/",
+  "ratio_numerical_estimates_max": {
+    "fo_born": 6.121555712113036e-06,
+    "ll_born": 7.181390498045559e-06,
+    "nll_born": 7.1812157373951635e-06,
+    "ll_fo": 2.3652664264961487e-06,
+    "nll_fo": 2.364617451400264e-06,
+    "nll_ll": 3.340133947205004e-09
+  },
+  "validation": {
+    "targeted_ctest": [
+      "inclusive_mass_response",
+      "photonic_nll",
+      "photonic_dressing",
+      "fsr_reference_analysis"
+    ],
+    "python_guard_tests": 9,
+    "status": "passed"
+  }
+}

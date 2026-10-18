@@ -16,7 +16,40 @@ the standalone MIT library or this source distribution.
 
 ## Separately obtained software
 
-MCFM, PHOTOS, RECOLA, LHAPDF/PDF sets and DYTurbo are optional external
+`adapters/dyturbo/` contains original MIT-licensed client/build code. Its optional
+builder downloads checksum-pinned upstream archives into an ignored directory,
+retains upstream licence files, and makes documented build compatibility edits
+to isolated HELLx/DYTurbo sources. DYTurbo is GPLv3; linked native executables
+remain subject to the backend and dependency licence terms. These executables,
+downloaded sources and PDF grids are not distributed with the MIT library.
+
+`adapters/renesance/` contains original MIT-licensed reference-driver code.
+Its builder obtains the checksum-pinned GPLv3 ReneSANCe 1.3.11 release and
+keeps its SANC modules, generated FSR-only integrated expressions, and linked
+executables in an ignored build directory. The generated expressions retain
+the SANC coefficients and copyright; they and the linked reference executable
+are subject to the external licence terms. They are not part of the MIT source
+distribution. PYTHIA and PHOTOS remain separately obtained dependencies.
+
+`adapters/kkmcee/` contains original MIT-licensed build/reference code for
+the separately obtained official KKMCee v4.32.01 Fortran release. The builder
+pins its Git commit, retains the upstream files and builds the original
+amplitudes without copying them into leptonff. KKMCee and its bundled
+TAUOLA/PHOTOS/utility components retain their respective copyright, licensing
+and citation terms. Their sources and linked executables stay in ignored
+external/build/result directories and are not relicensed or distributed here.
+
+`adapters/mcmule/` contains original MIT-licensed API-client, analysis and
+importance-coordinate code for separately obtained McMule v0.8.0. Its builder
+pins the commit and recursive submodules. A documented preparation script adds
+an explicit call to the original two-body phase-space routine to avoid an
+indirect-call compiler/platform failure; it edits no amplitude or subtraction
+formula. Prepared upstream sources retain GPL-3.0-or-later terms in the ignored
+external directory. McMule, OpenLoops, COLLIER and the other dependencies retain
+their own licence and citation requirements. Their sources and linked reference
+executables are not distributed as part of the standalone MIT library.
+
+MCFM, PHOTOS, PYTHIA, KKMCee, McMule, ReneSANCe/SANC, RECOLA, LHAPDF/PDF sets and DYTurbo are optional external
 software or data. Their sources, libraries and datasets are not bundled.
 They retain their own licensing and citation requirements; the root MIT
 licence does not relicense them or executables combining them.

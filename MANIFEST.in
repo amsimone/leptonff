@@ -10,6 +10,6 @@ recursive-include configs *.conf *.dat
 recursive-include docs *.md *.rst *.py *.txt
 recursive-include benchmarks *.md *.json
 recursive-include python *.py
-recursive-include adapters *.cpp *.hpp *.py *.f90 LICENSE
+recursive-include adapters *.cpp *.hpp *.py *.f90 *.txt LICENSE CMakeLists.txt
 recursive-include LICENSES *.txt
 global-exclude __pycache__ *.py[cod] .DS_Store

@@ -1,5 +1,12 @@
 # Fixed-alpha photonic NLL with unitary decay normalisation
 
+The later [complete Z mass-radiator audit](z_radiator_validation.md) checks
+the full hard-matched second coefficient independently. It also records
+fixed-Q KKMC comparisons and the remaining physical validation limits.
+The subsequent [McMule fixed-order benchmark](mcmule_fixed_order.md) adds
+external O(alpha^2) moment evidence for the retained mass-log coefficients,
+while resolving finite contributions beyond the stated NLL prescription.
+
 Version 0.24 adds a separate `--photonic-nll` W/Z mode. It retains fixed
 alpha, excludes pair channels and fermion-loop running, and includes the
 time-like NLO photonic kernel. The existing `--photonic-ll` prediction is

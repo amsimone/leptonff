@@ -1,5 +1,50 @@
 # Changelog
 
+## Unreleased
+
+- Add a pinned optional McMule strict O(alpha^2) photonic shape benchmark,
+  inclusive NLO normalization, independently checked importance maps, six-Q
+  logarithm fits and FKS/technical controls. Find finite moment remainders
+  consistent with the retained NLL mass logs; keep full NNLO matching and
+  resummed residual interpretation distinct. Document computation ingredients,
+  external evidence, uncertainty limits and missing phenomenology inputs.
+
+- Audit the complete normalized Z radiator through second order with independent
+  continuum moments/cumulatives, mass/coupling scans and numerical controls.
+  Add a pinned ROOT-free KKMC adapter with paired order weights and controls,
+  a mass-only beyond-NLL matching variation, and separate uncertainty diagnostics.
+  Report resolved external residuals without assigning a total theory error.
+  Support independent multi-seed KKMC campaigns and covariance-preserving raw
+  sample pooling, with seed consistency diagnostics and tenfold reference statistics.
+  Add coupling/mass residual diagnostics with absolute fit covariance and
+  truncation checks; expose the legacy CEEX support floor and guard sample pooling.
+
+- Add leptonff-only fine-bin Z mass accuracy plots and a QED fragmentation-scale
+  scan with consistent hard matching, first-order scale-cancellation tests,
+  separate grid/quadrature controls and magnified NLL/LL differences.
+
+- Add an optional ROOT-free ReneSANCe/SANC Born-QCD FSR reference, independent
+  massive Z mass radiator with quadrature, W fixed-order normalization and
+  cutoff checks, PHOTOS/PYTHIA decay comparisons, and original/additive-NLO
+  matching plots. Extend the inclusive mass reduction to matched LL as well
+  as NLL. Fine-bin shower/W statistical precision remains explicitly open.
+
+- Demonstrate photonic order-alpha and matched NLL decay on common DYTurbo
+  NLO+NLL QCD production for the angular-inclusive dimuon mass spectrum,
+  with mass-migration and fragmentation-grid refinements and zero-alpha
+  closure. Add a fine-bin conservative mass convolution and reusable PHOTOS
+  transfer moments for a shared-production comparison.
+- Implement differential DYTurbo NLO+NLL W decay coupling in RES/CT/V+jet,
+  correlated per-bin model covariance, QCD production export and a runner.
+  Zero-alpha/native/replay pilot checks pass; precision W shapes remain open.
+
+- Add an isolated, checksum-pinned DYTurbo 1.4.2 build and native QCD production
+  client, a six-mode NLO/NNLO/resummed integration runner, signed per-term JSON
+  results and an original-executable closure checker. NNLO fiducial quadrature
+  is explicitly guarded.
+- Resolve the leptonic decay preset's observed-flavour threshold from the
+  caller's muon mass, including C ABI promotion on extended-precision systems.
+
 ## 0.27.0
 
 - Replace event-loop hard-kernel quadrature with a shared analytic primitive.
@@ -42,5 +87,6 @@
 - MCFM production-only export and online/offline W±/Z closure.
 - Repository licensing, contribution guidance and standalone CI.
 
-Native DYTurbo integration and a certified high-statistics phenomenology campaign
-remain open. See [the history](DEVELOPMENT_HISTORY.md) for earlier milestones.
+A certified high-statistics fiducial phenomenology campaign remains open;
+the native DYTurbo coupling is now demonstrated in the configurations above.
+See [the history](DEVELOPMENT_HISTORY.md) for earlier milestones.

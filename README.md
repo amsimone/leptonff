@@ -60,8 +60,29 @@ ctest --test-dir build --output-on-failure --parallel 4
 The optional MCFM 10.3.1 adapter supplies NLO QCD production and PHOTOS
 comparisons. [Signed production archives and replay](docs/packaging.md) support
 repeated QED/cut/bin studies; current MCFM exports contain central QCD weights.
-Native DYTurbo integration and portable interpolated response tables remain
-planned. No DYTurbo NNLO+NNLL result is available yet.
+The optional [native DYTurbo 1.4.2 client](docs/dyturbo_integration.md) runs
+NLO/NNLO QCD with quadrature or VEGAS and matched NLO+NLL/NNLO+NNLL production.
+The decay clients below currently cover the NLO+NLL coupling. Interpolated
+response tables remain planned.
+
+An [inclusive dimuon-mass demonstration](docs/dyturbo_qed_mass.md) combines
+NLO+NLL QCD production with order-alpha and matched photonic NLL decay through
+a refined mass-migration convolution, without laboratory lepton cuts.
+The [differential W client](docs/dyturbo_w_decay.md) now couples NLO+NLL QCD
+to the analytic decay and PHOTOS, retaining on/off covariance and exporting
+QCD records for replay. Its fine-bin precision study is still in progress.
+
+The [independent Born-QCD FSR benchmark](docs/born_fsr_reference.md) compares
+ReneSANCe/SANC fixed order, PHOTOS, PYTHIA and matched photonic LL/NLL, with
+a deterministic massive SANC reference for the inclusive dimuon mass.
+Its leptonff-only Z accuracy comparison includes consistent QED
+fragmentation-scale variations and separate grid/quadrature refinements.
+The [complete-radiator audit](docs/z_radiator_validation.md) adds independent
+second-order/logarithmic checks, an optional KKMC fixed-Q comparison and
+a matching-prescription variation. Resolved generator residuals remain explicit.
+The [McMule fixed-order check](docs/mcmule_fixed_order.md) independently tests
+photonic second-order mass logs. The [ingredient and evidence report](docs/computation_report.md)
+distinguishes verified results, remaining assumptions and missing physics.
 
 The photonic NLL decay prescription is explicitly unitary-conditioned. The Z
 hard response supports parity-even, charge-symmetric measurements. Complete

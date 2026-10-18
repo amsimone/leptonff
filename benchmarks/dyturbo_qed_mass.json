@@ -1,0 +1,65 @@
+{
+  "scope": "Inclusive Z mass proof of concept; bin-integrated QCD production with midpoint decay migration, refined in both grids",
+  "qed": "Fixed alpha=1/137.035999084, photonic unitary NLL, finite O(alpha) decay matching, no real pairs or running alpha",
+  "qcd": "DYTurbo NLO+NLL, shared native production for all three curves",
+  "provenance": {
+    "production_sha256": "8be7057b6129962f0b615e5026103b7732ced87dba894a6fb5bfc6709b7596fe",
+    "decay_executable_sha256": "5e3bf940c193fb1b9660d9a3fa19867a3798f8d6b7eebb8b715300741a424e6b",
+    "physics": {
+      "sqrts": 13000,
+      "ew_scheme": 1,
+      "gf": 1.1663787e-05,
+      "alpha_ew": 0.0075623956366973385,
+      "mw": 80.385,
+      "mz": 91.1876,
+      "gamma_w": 2.091,
+      "gamma_z": 2.495,
+      "muR_function": 1,
+      "muF_function": 1,
+      "muRes_function": 1,
+      "muR_factor": 0.5,
+      "muF_factor": 0.5,
+      "muRes_factor": 0.5,
+      "qt_cut": 0,
+      "qt_over_m_cut": 0.008,
+      "b_prescription": 0,
+      "np_form_factor": 2
+    },
+    "pdf": "NNPDF31_nnlo_as_0118",
+    "member": 0
+  },
+  "parent_mass_range_GeV": [
+    66,
+    116
+  ],
+  "observed_bin_width_GeV": 1,
+  "alpha_reference": "fixed",
+  "fragmentation_scale_GeV": 91.1876,
+  "ff_bins": 65536,
+  "production_bins": 200,
+  "inclusive_normalization_pb": 1878.4921524349952,
+  "peak_90_92": {
+    "qed_off_pb": 811.4549294327334,
+    "order_alpha_pb": 697.4434141720872,
+    "photonic_nll_pb": 703.722761057539
+  },
+  "window_66_116": {
+    "qed_off_pb": 1878.4921524349945,
+    "order_alpha_pb": 1835.5869766605265,
+    "photonic_nll_pb": 1834.6569524174938
+  },
+  "controls": {
+    "ff_refinement_max_change_over_born": 0.0010417133126972757,
+    "peak_ff_refinement_change_over_born": 3.128563619484222e-05,
+    "production_refinement_max_ratio_change": 0.004123226208938902,
+    "peak_production_refinement_ratio_change": 0.0005478437506131195,
+    "alpha_zero_closure": "passed; order-alpha and photonic NLL reproduce QED off bin by bin",
+    "angular_mass_factorisation_test": "passed"
+  },
+  "limitations": [
+    "No laboratory muon cuts and no W angular coupling",
+    "Production outside 66..116 excluded: no feed-in from larger parent masses",
+    "Midpoint production/decay convolution is an approximation; supplied grids quantify refinement",
+    "QCD errors and numerical-control differences are not complete theory uncertainties"
+  ]
+}

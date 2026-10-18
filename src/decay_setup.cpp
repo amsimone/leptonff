@@ -6,6 +6,7 @@
 #include <locale>
 #include <sstream>
 #include <stdexcept>
+#include <utility>
 
 namespace leptonff {
 DecayPreset decay_preset(const std::string& name) {
@@ -27,7 +28,11 @@ DecayConfiguration make_decay_configuration(SpinDecay process,DecayPreset model,
     c.evolution.alpha_msbar_at_mu0=model==DecayPreset::born?0:alpha.value;
     c.evolution.coupling=QEDCouplingMode::fixed;
   }else if(model==DecayPreset::leptonic_nll) {
-    theory.flavours=QEDFlavourScheme::leptons();c.evolution=theory.parameters();
+    auto flavours=QEDFlavourScheme::leptons();
+    // The observed flavour and its starting threshold must use the caller's
+    // mass, including when a double has been promoted through the C ABI.
+    flavours.fermions[flavours.muon_flavour].mass=mass;
+    theory.flavours=std::move(flavours);c.evolution=theory.parameters();
     c.mode=DecayMode::coupled_nll;c.fraction_measure=FractionMeasure::conservative_cells;
   }else if(model==DecayPreset::qed_hvp) {
     if(alpha.scheme!=AlphaScheme::on_shell)throw std::invalid_argument("HVP preset requires its on-shell alpha anchor");

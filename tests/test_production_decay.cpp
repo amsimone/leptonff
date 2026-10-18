@@ -1,10 +1,19 @@
 #include "leptonff/production_decay.hpp"
+#include "leptonff/decay_setup.hpp"
 #include "check.hpp"
 #include <future>
 #include <map>
 
 int main() {
   using namespace leptonff;
+  // Deliberately move the mass below the canonical muon threshold. This
+  // also exercises the double-to-long-double promotion used by the C ABI.
+  const Real requested_mass=std::nextafter(double(.1056583755L),0.);
+  const auto threshold_config=make_decay_configuration(SpinDecay::wplus,
+      DecayPreset::leptonic_nll,AlphaInput::msbar(0,requested_mass),requested_mass);
+  const auto& flavours=*threshold_config.evolution.flavour_scheme;
+  close(flavours.fermions[flavours.muon_flavour].mass,requested_mass,0,
+        "preset uses the caller's observed-flavour threshold");
   const FourVector mu{50,40,0,30},other{50,-40,0,-30};
   for(auto kind:{SpinDecay::wplus,SpinDecay::wminus,SpinDecay::neutral_vector}) {
     const bool neutral=kind==SpinDecay::neutral_vector;

@@ -1,0 +1,107 @@
+{
+  "scope": "Inclusive mass; common DYTurbo NLO+NLL QCD, normalized photonic decays",
+  "observed_bin_width_GeV": 0.25,
+  "parent_mass_GeV": [
+    66,
+    116
+  ],
+  "photos_trials": 2700001854,
+  "independent_seeds": [
+    791,
+    792,
+    793,
+    794,
+    795,
+    796,
+    797,
+    798,
+    799,
+    800,
+    801,
+    802,
+    803,
+    804,
+    805,
+    806,
+    807,
+    808
+  ],
+  "photos_settings": {
+    "version": "3.56",
+    "alpha": 0.0072973525692838,
+    "cutoff": 1e-07,
+    "exponentiation_precision": 1e-07,
+    "full_me": false
+  },
+  "peak_90_92_pb": {
+    "off": 810.5531675623696,
+    "order_alpha": 697.2654292697059,
+    "photonic_nll": 703.3765122049527,
+    "photos": 702.570038303366,
+    "photos_mc_error": 0.010975766549987097
+  },
+  "max_ratio_mc_error": 0.0009367074538863684,
+  "peak_max_ratio_mc_error": 6.941768243952872e-05,
+  "max_ratio_photos_input_error": 7.082840020796875e-05,
+  "max_ratio_nll_input_error": 7.091245661200826e-05,
+  "production_grid_controls": {
+    "results/dyturbo-mass-precision/refined-524k-192.json": 3.6710642299375706e-05,
+    "results/dyturbo-mass-precision/refined-coarsened-1M-384.json": 2.514187144897484e-05
+  },
+  "normalization_residual_fb": 0.0,
+  "seed_pull_rms": 0.9757654738499485,
+  "provenance": {
+    "results/dyturbo-mass-precision/native-refined.json": "715953cf4317c20ce5e722710a7a5125c0a0aa3ff384b82a5a2d95b46c71af27",
+    "results/dyturbo-mass-precision/refined-1M-384.json": "f1086510be48cbbd629864da85d4812516467f47b90349f997bc49a6ff83bdce",
+    "results/dyturbo-mass-precision/tight-photos/seed791/result.json": "935fca2f172546cb864e582bee3fe0f560d73af18955c688536bfbe4142e2338",
+    "results/dyturbo-mass-precision/tight-photos/seed792/result.json": "93c0c93beadf85e7327d99af5bd10c864f0732e1a219b8395e5c2b3bf55d95bc",
+    "results/dyturbo-mass-precision/tight-photos/seed793/result.json": "4e4497d88e504ea14e94ca16aa13191ec3b99b5d8979622bc3d1ab89b80dd45b",
+    "results/dyturbo-mass-precision/tight-photos/seed794/result.json": "4f41b54c703a205d5cbfb003498a2b4a1792f320e5140c4442044315118aa9c3",
+    "results/dyturbo-mass-precision/tight-photos/seed795/result.json": "0aee281f267a8fd7daff6f8872298888110ed25ff65494991e2953e7085774c3",
+    "results/dyturbo-mass-precision/tight-photos/seed796/result.json": "6276000ebf7c13e0630bc861533a410c36c350435697d52fc13ead53743aea81",
+    "results/dyturbo-mass-precision/tight-photos/seed797/result.json": "63fe36fbd499305a3fe3620bb5b39e475d1ebeb8266467210afcac03a9b1a3dd",
+    "results/dyturbo-mass-precision/tight-photos/seed798/result.json": "42adb326f0fabd28d4d20407e953b42bce1cf9516d1580ffce497c8d9fcf5761",
+    "results/dyturbo-mass-precision/tight-photos/seed799/result.json": "d2378a829a48e6796b59d459ee01b153e86ab91275c5b4c972ab90c9013393d3",
+    "results/dyturbo-mass-precision/tight-photos/seed800/result.json": "81c9ac376acb59bdeb8bab42a62be0c381306e042e547644bbee99f4e6d10f30",
+    "results/dyturbo-mass-precision/tight-photos/seed801/result.json": "a56facb04d63093b709d775bb348ddef1b88cd2e840d931e7fa1669d5f27ebd4",
+    "results/dyturbo-mass-precision/tight-photos/seed802/result.json": "6c5da9a46313fcde8be54f99690fbc7cce1be15a3d5a01d38cc24644fda5e932",
+    "results/dyturbo-mass-precision/tight-photos/seed803/result.json": "310e1aeecc36fbdd37f1c25638c0a64e462642550b36d9ab96a852b193553d1a",
+    "results/dyturbo-mass-precision/tight-photos/seed804/result.json": "fb4f6f20ae51e31891d949a834f2340cab03e8d4c49de2aa9ce84b8a8b058d50",
+    "results/dyturbo-mass-precision/tight-photos/seed805/result.json": "8318e7221245cfdc1a3846824a73809032edad3ae2772586ed736a327a3ff572",
+    "results/dyturbo-mass-precision/tight-photos/seed806/result.json": "6e287969319ef66c9a0cbb36754b3c45974c8aa9d140cb5f8e8c6de70ea8ec7a",
+    "results/dyturbo-mass-precision/tight-photos/seed807/result.json": "ddcbd628635bd741b67a53eb960f5dd8ae1e5c2b8c92a4c999f4e5681e53f104",
+    "results/dyturbo-mass-precision/tight-photos/seed808/result.json": "b2eb3178f6837039e54d531ecf5651d0e3f9dcf8e28defbd79350b7d63521a67",
+    "results/dyturbo-mass-precision/refined-524k-192.json": "99d2ea089aab0d7f3e6c04e861c69533b726554ff248aff2001de09ab2fda2c9",
+    "results/dyturbo-mass-precision/refined-coarsened-1M-384.json": "e0e234a9871a8c865a0226d5f5c5fd0bd653a80f50fe5987bc0f9123b81e2a0b",
+    "results/dyturbo-mass-precision/tight-photos/campaign.json": "e339e6b6dddc4944dcbcfee8a71b4506c132aeebe217a02d46e62bf730add1bd",
+    "results/dyturbo-mass-precision/comparison/report.json": "eea316d921763183cd2b5321bdd9b6c56b1ae4998ad995663601217c654462d8",
+    "results/dyturbo-mass-precision/comparison/spectrum.tsv": "544a24709094ae2ad93f6c5a38e2b191e16052ffc91fd77dc4a18748c580b215",
+    "/Users/simone.amoroso/Work/generators/leptonff/adapters/dyturbo/compare_precision.py": "b04857be1d504df6d850e475d67479694f86dab3b5ab3060e461cea78e250d15"
+  },
+  "limitations": [
+    "No lab muon cuts; no parent-mass feed-in above 116 GeV.",
+    "PHOTOS 3.56 universal decay mode: interference/exponentiation on, full production-dependent ME off.",
+    "Error bars in figure are PHOTOS MC only. Native quadrature error estimates and refinement shifts are reported separately.",
+    "No QCD/QED scale/PDF uncertainties; this is a numerical tool comparison.",
+    "PHOTOS transfer density uses conservative 0.25 GeV reconstruction; its source refinement is supplied as a control."
+  ],
+  "peak_corrections_percent": {
+    "order_alpha": -13.976595592533602,
+    "photonic_nll": -13.222655791937289,
+    "photos": -13.32215252254808
+  },
+  "peak_photos_minus_nll_percentage_points": -0.09949673061078597,
+  "precision_met_for_photos_mc": true,
+  "photos_numerical_control": {
+    "loose_settings": {
+      "version": "3.56",
+      "cutoff": 1e-05,
+      "exponentiation_precision": 0.0001
+    },
+    "loose_trials": 2400000792,
+    "tight_loose_peak_shift_pb": 0.0012762990058945434,
+    "tight_loose_peak_error_pb": 0.016000128867756157,
+    "per_bin_difference_pull_rms": 1.0535770284257324,
+    "max_abs_per_bin_pull": 3.04043761675624
+  }
+}

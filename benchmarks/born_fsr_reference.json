@@ -1,0 +1,244 @@
+{
+  "schema": "leptonff-born-fsr-benchmark-v1",
+  "description": "Numerical snapshot with MC errors; not bitwise regression targets or a phenomenology certification.",
+  "backends": {
+    "renesance": "1.3.11",
+    "archive_sha256": "260358cbc558fa3edac0d4e2f5447a5ab6296396100abaf38b6b83a7597b7165",
+    "photos": "3.56",
+    "pythia": "8.318"
+  },
+  "production": "Born QCD, shared SANC production for every decay method",
+  "normalization": "unitary at each parent Q",
+  "common": {
+    "ecm": 13000,
+    "pdf": "NNPDF31_nnlo_as_0118",
+    "pdf_member": 0,
+    "alpha": 0.0072973525692838015,
+    "muon_mass": 0.1056583755
+  },
+  "electroweak_inputs": {
+    "mw": 80.379,
+    "ww": 2.085,
+    "mz": 91.1876,
+    "wz": 2.4952
+  },
+  "cuts": {
+    "z": {
+      "parent": [
+        50,
+        200
+      ],
+      "observed_mll": [
+        50,
+        116
+      ],
+      "lepton_cuts": false
+    },
+    "w": {
+      "parent": [
+        60,
+        200
+      ],
+      "muon_pt_min": 25,
+      "muon_abs_eta_max": 2.4
+    }
+  },
+  "bin_widths": {
+    "mll_GeV": 0.25,
+    "ptl_GeV": 0.25,
+    "abs_eta": 0.05,
+    "mt_GeV": 0.5
+  },
+  "fiducial_corrections": {
+    "z": {
+      "fo": {
+        "fraction": -0.010276773282462015,
+        "MC_error": 0.0
+      },
+      "photos": {
+        "fraction": -0.01126836077772031,
+        "MC_error": 0.00012792773969483865
+      },
+      "pythia": {
+        "fraction": -0.010674648564635736,
+        "MC_error": 0.00012615845095004078
+      },
+      "our_order_alpha": {
+        "fraction": -0.010276257536292355,
+        "MC_error": 0.0
+      },
+      "our_ll": {
+        "fraction": -0.01068245321741812,
+        "MC_error": 0.0
+      },
+      "our_nll": {
+        "fraction": -0.010561083398215931,
+        "MC_error": 0.0
+      }
+    },
+    "wminus": {
+      "fo": {
+        "fraction": -0.021653723825902138,
+        "MC_error": 0.0003421495299168123
+      },
+      "photos": {
+        "fraction": -0.02153518713419822,
+        "MC_error": 0.00019210257501619152
+      },
+      "pythia": {
+        "fraction": -0.02328134920489311,
+        "MC_error": 0.00019977460633437168
+      },
+      "our_order_alpha": {
+        "fraction": -0.021776621708992416,
+        "MC_error": 0.00023759578421116587
+      },
+      "our_ll": {
+        "fraction": -0.02170571755032291,
+        "MC_error": 0.0002054894480046254
+      },
+      "our_nll": {
+        "fraction": -0.021631036660711644,
+        "MC_error": 0.00020550005409736912
+      }
+    },
+    "wplus": {
+      "fo": {
+        "fraction": -0.022979303539087836,
+        "MC_error": 0.0003992451420427656
+      },
+      "photos": {
+        "fraction": -0.02301337684979421,
+        "MC_error": 0.0002328420358577651
+      },
+      "pythia": {
+        "fraction": -0.02510081128367969,
+        "MC_error": 0.00024353052048666234
+      },
+      "our_order_alpha": {
+        "fraction": -0.02305874688154963,
+        "MC_error": 0.00032120745305946164
+      },
+      "our_ll": {
+        "fraction": -0.02294600853992179,
+        "MC_error": 0.0002976676325236497
+      },
+      "our_nll": {
+        "fraction": -0.022871540998123496,
+        "MC_error": 0.000297680275742925
+      }
+    }
+  },
+  "validation": {
+    "schema": "leptonff-born-fsr-validation-v1",
+    "z_order_alpha_max_difference_over_born": 1.1546773388548814e-06,
+    "z_fo_max_refinement_shift": 1.4048738191885235e-05,
+    "z_nll_max_refinement_shift": 1.1430065973816461e-05,
+    "z_direct_mc_vs_quadrature": {
+      "bins": 266,
+      "pull_rms": 1.012752473750253,
+      "max_abs_pull": 4.5069659782759
+    },
+    "wplus_soft_cutoff": {
+      "bins": 270,
+      "pull_rms": 1.1006829475841953,
+      "max_abs_pull": 2.933289051070939
+    },
+    "wplus_inclusive_closure": {
+      "correction": 0.000629760806909907,
+      "error": 0.00029841147563835986,
+      "born": 9265.533566748247,
+      "born_error": 6.560122700831502
+    },
+    "wminus_soft_cutoff": {
+      "bins": 270,
+      "pull_rms": 0.9869200021586627,
+      "max_abs_pull": 2.8384792852795266
+    },
+    "wminus_inclusive_closure": {
+      "correction": 0.0004207187715734584,
+      "error": 0.0002781595152005404,
+      "born": 6948.457907843684,
+      "born_error": 4.545837642874012
+    },
+    "z_shower_cutoffs": {
+      "photos": {
+        "bins": 266,
+        "pull_rms": 0.9583320120533936,
+        "max_abs_pull": 2.9188822205352425
+      },
+      "pythia": {
+        "bins": 266,
+        "pull_rms": 1.022122007824451,
+        "max_abs_pull": 2.947601803331694
+      }
+    },
+    "z_pythia_mec": {
+      "on": {
+        "correction": -0.010674648564635736,
+        "error": 0.00012615845095004035,
+        "born": 1626.2324499974561,
+        "born_error": 0.9641409464214615
+      },
+      "off": {
+        "correction": -0.011535808300528139,
+        "error": 0.0001686151858922955,
+        "born": 1625.9521949475998,
+        "born_error": 1.359582093308652
+      }
+    },
+    "wplus_shower_cutoffs": {
+      "photos": {
+        "bins": 269,
+        "pull_rms": 0.9356740062969625,
+        "max_abs_pull": 2.8136618229795167
+      },
+      "pythia": {
+        "bins": 269,
+        "pull_rms": 1.030296927054172,
+        "max_abs_pull": 2.9811290615794395
+      }
+    },
+    "wplus_pythia_mec": {
+      "on": {
+        "correction": -0.025100811283679914,
+        "error": 0.0002435305204866623,
+        "born": 4245.835583218699,
+        "born_error": 5.670314382205637
+      },
+      "off": {
+        "correction": -0.02639548047847906,
+        "error": 0.0003570151892191464,
+        "born": 4253.819252002608,
+        "born_error": 8.034164525978712
+      }
+    },
+    "wminus_shower_cutoffs": {
+      "photos": {
+        "bins": 269,
+        "pull_rms": 0.9874744169922333,
+        "max_abs_pull": 3.3658114592959114
+      },
+      "pythia": {
+        "bins": 269,
+        "pull_rms": 1.034085183067188,
+        "max_abs_pull": 3.5990899416787476
+      }
+    },
+    "wminus_pythia_mec": {
+      "on": {
+        "correction": -0.023281349204892998,
+        "error": 0.00019977460633437125,
+        "born": 3222.4162570044437,
+        "born_error": 3.7437074496429608
+      },
+      "off": {
+        "correction": -0.024070306246559814,
+        "error": 0.0002887927895383948,
+        "born": 3223.371358787779,
+        "born_error": 5.294678514460727
+      }
+    }
+  },
+  "guide": "docs/born_fsr_reference.md"
+}

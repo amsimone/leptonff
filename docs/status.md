@@ -1,16 +1,51 @@
 # Implementation status
 
-For the current package layout, interfaces and scientific contract, see the
-[version 0.26 manual](manual/index.md). The operational history below records
-the preceding physics and generator milestones.
+The [independent McMule fixed-order benchmark](mcmule_fixed_order.md) now
+checks strict photonic O(alpha^2) normalized vector-current moments. A six-Q
+scan is consistent with finite constant remainders after subtracting our NLL
+expansion; no additional mass-log coefficient is resolved. FKS and tighter
+technical controls agree. This supports the tested NLL mass-log content,
+without completing finite NNLO matching or explaining the full resummed KKMC
+residual. The [ingredient/evidence report](computation_report.md) records the
+actual inputs, independent checks, confidence limits and missing physics.
+
+An independent Born-QCD photonic FSR benchmark now compares ReneSANCe/SANC
+NLO, PHOTOS, PYTHIA and the library's order-alpha/LL/NLL predictions. The
+inclusive Z mass reference has a deterministic SANC radiator/quadrature path;
+W uses massive differential SANC amplitudes. A separate additive match to
+SANC NLO is available. Fine-bin W/shower precision and phenomenology remain
+distinct outstanding requirements. See the [reference guide](born_fsr_reference.md).
+The leptonff-only Z mass study additionally has a three-point QED
+fragmentation-scale scan, explicit first-order scale cancellation, independent
+grid/quadrature refinements, and magnified resummation/NLL differences.
+The [complete Z radiator audit](z_radiator_validation.md) passes 4,623
+independent checks and compares fixed-Q moments/cumulatives to pinned KKMC.
+The fixed-Q reference now has 200 million trials per mass and a 100-million-trial
+cutoff check, with independent seed pooling and roughly threefold smaller MC errors.
+Small residual differences are resolved; a total physical theory uncertainty
+and their perturbative/sector classification remain open.
+The [residual investigation](z_radiator_residuals.md) adds 850 million targeted
+coupling/mass trials. A simple finite second-order completion does not explain
+the mass dependence; fixed-order logarithmic coefficient separation remains
+necessary. A small legacy CEEX support restriction is now explicit in metadata.
+
+The [scientific manual](manual/index.md) describes the current package and
+interfaces. The native DYTurbo 1.4.2 QCD production client now supports the
+six NLO/NNLO/quadrature/VEGAS/resummed modes, with an isolated pinned build and
+original-executable closure checks. Differential NLO+NLL W radiative coupling
+and reusable production export now work, with zero-alpha/native/replay pilot
+checks; a precision W shape result remains pending. See the
+[W coupling guide](dyturbo_w_decay.md). NNLO quadrature is angular-inclusive; fiducial NNLO needs VEGAS or an
+explicit hybrid. See the [interface and validation guide](dyturbo_integration.md).
+The operational history below records preceding milestones.
 
 Version 0.25 packages the generator-independent decay/tensor response as an
 installable C++ library and C/Fortran interface, with configurable bins,
 grouped production archives and checksum-verified multi-model replay.
 MCFM now uses the common spectrum evaluator and can export production
 without evaluating QED. See the [package and replay guide](packaging.md).
-DYTurbo 1.4.2 native coupling is pending its source archive; the generic
-spin/angular interface is ready, but no NNLO+NNLL result is claimed.
+At this milestone DYTurbo 1.4.2 native coupling was pending its source archive;
+the generic spin/angular interface was ready. See the current status above.
 
 Version 0.24 adds a separate **fixed-alpha photonic NLL** mode, with explicit
 unitary conditioning of the published time-like photonic kernel and one

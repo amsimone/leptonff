@@ -16,6 +16,7 @@ physics
 tutorials
 interfaces
 validation
+extensions
 architecture
 performance
 python

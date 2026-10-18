@@ -1,0 +1,85 @@
+{
+  "schema": "leptonff-z-radiator-validation-v1",
+  "scope": "Born QCD; normalized fixed-alpha photonic shapes",
+  "independent_audit": {
+    "checks": 4623,
+    "passed": true,
+    "client_sha256": "a6593a5e380a25b2f12f2793955ddd313e4917187541cc16f564f20de51f0398",
+    "native_grids": [
+      65536,
+      131072
+    ],
+    "grid_reexpansion": "independent complete hard+boundary+two-leg coefficients"
+  },
+  "kkmcee": {
+    "tag": "v4.32.01",
+    "commit": "527ed9d6f8c0080a256e77ae0d7adbf4c5207eea",
+    "central_trials_per_Q": 200000000,
+    "Q": [
+      75,
+      91.1876,
+      120
+    ],
+    "cutoff_control_trials": 100000000,
+    "alpha_controls_trials_each": 20000000,
+    "max_absolute_moment_difference": 0.00013103369219047423,
+    "max_absolute_moment_pull": 12.226323681926122,
+    "max_cumulative_pull": 16.214287371960232,
+    "max_relative_cumulative_difference": 0.0002950264666007163,
+    "max_cutoff_pull": 1.0160710537961364,
+    "physical_validation_status": "resolved residuals; their separation into omitted orders and sector conventions is not established",
+    "central_seeds_per_Q": 10,
+    "cutoff_seeds": 10,
+    "max_seed_vs_rest_pull": 3.216659632644738,
+    "max_initial_vs_added_pull": 1.8770431155901273,
+    "mc_error_reduction_range": [
+      3.160616419248775,
+      3.4145395757206285
+    ],
+    "combination": "independent raw trial-weighted samples; full within-observable covariance retained"
+  },
+  "peak_90_92": {
+    "nll_pb": 588.2911151273854,
+    "scale_shifts": {
+      "0.5": 0.00011688617097393994,
+      "1": 0.0,
+      "2": -0.00033752042261625537
+    },
+    "quadratic_shift": 0.00012584443912033727
+  },
+  "component_interpretation": {
+    "numerical": "empirical grid+quadrature refinement estimate, not a rigorous bound",
+    "scale": "three-point QED fragmentation-scale envelope, not a confidence interval",
+    "matching": "one explicitly NNLL finite-insertion completion; does not span all missing terms",
+    "external": "KKMC fixed-Q residuals are observable-dependent comparisons, not mll error bands",
+    "normalization": "conditional photon-only shape; an absolute partial-width correction is not supplied",
+    "excluded_physics": "pairs, fermion-loop running, ISR, IFI, weak corrections and improved QCD production",
+    "total": "no certified total theoretical uncertainty is assigned"
+  },
+  "targeted_ctests": [
+    "inclusive_mass_response",
+    "photonic_nll",
+    "photonic_dressing",
+    "fsr_reference_analysis",
+    "radiator_validation_analysis",
+    "independent_complete_mass_radiator",
+    "installed_package"
+  ],
+  "results": "results/z-radiator-audit/",
+  "reports": {
+    "results/z-radiator-audit/complete-sealed/report.json": "73781eeaa44f9ed5b5573116b20cd15c3316c983d6469d10c53d387f5b0cd7d0",
+    "results/z-radiator-audit/comparison-final/report.json": "1e48c95a8ae5fcf7240aa99819b33d24ff74b4a27590d725fc17ef9478a8aee0",
+    "results/z-radiator-audit/uncertainty-final/report.json": "f97699fcc3c52a7f0a3f0ddc4f7fe526fbe7ad3f11c7b804cd6a8ee80b1d53ad",
+    "results/z-radiator-audit/comparison-high-stat/report.json": "9a15f0b188ee3d0c184b54c70d6ca965cf782eabaf089dd0735b07ae2bbaa17a",
+    "results/z-radiator-audit/comparison-high-stat/statistics-gain.json": "7acf41b67286868181111301f20ec91ba789c562f6c8debe988d58700b18a65c",
+    "results/z-radiator-audit/uncertainty-high-stat/report.json": "0fef506e9d439e247a0a1bceb1af1714640d8074319b010e00f500bccfd8caac"
+  },
+  "manual_build": "Sphinx warnings treated as errors",
+  "residual_investigation": {
+    "report": "benchmarks/z_radiator_residuals.json",
+    "new_trials": 850000000,
+    "status": "Resolved mass-dependent residual; a finite second-order completion alone is insufficient. Unique fixed-order/logarithmic origin remains unestablished.",
+    "legacy_ceex_min_mass_GeV": 1.0,
+    "physical_mass_first_order_omitted_fraction_estimate": 7.047010839396001e-07
+  }
+}

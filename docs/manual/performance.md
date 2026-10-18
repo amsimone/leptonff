@@ -88,8 +88,11 @@ angular nodes, library version or numeric precision invalidate loading.
 
 The example under `examples/response_table/` builds and contracts a small table.
 Angular quadrature and hard-sampling accuracy remain independent of persistence.
-A native DYTurbo adapter and a validated interpolating response grid are still
-separate work; no new NNLO+NNLL phenomenology result is implied.
+The native DYTurbo client ({download}`integration guide <../dyturbo_integration.md>`) now runs QCD production
+through NNLO+NNLL. The differential NLO+NLL W client also exports reusable QCD
+records, and the inclusive Z mass adapter uses a cumulative two-leg loss table.
+A validated interpolating spin-response grid and fast correlated finite-term
+integration remain separate work; no NNLO+NNLL plus QED phenomenology result is implied.
 
 ## Reproducing timing measurements
 

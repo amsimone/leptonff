@@ -6,6 +6,9 @@ if(NOT LEPTONFF_BUILD_MATCHED)
   endforeach()
 else()
   enable_language(C)
+  add_executable(test_inclusive_mass_response test_inclusive_mass_response.cpp)
+  target_link_libraries(test_inclusive_mass_response PRIVATE leptonff)
+  add_test(NAME inclusive_mass_response COMMAND test_inclusive_mass_response)
   add_executable(test_c_api test_c_api.c)
   target_link_libraries(test_c_api PRIVATE leptonff)
   if(CMAKE_C_COMPILER_ID MATCHES "Clang|GNU")
@@ -57,6 +60,12 @@ else()
     endif()
     add_test(NAME dyturbo_source_preparation COMMAND ${Python3_EXECUTABLE}
       ${PROJECT_SOURCE_DIR}/tests/test_dyturbo_prepare.py)
+    add_test(NAME dyturbo_interface_contract COMMAND ${Python3_EXECUTABLE}
+      ${PROJECT_SOURCE_DIR}/tests/test_dyturbo_interface.py)
+    add_test(NAME dyturbo_precision_analysis COMMAND ${Python3_EXECUTABLE}
+      ${PROJECT_SOURCE_DIR}/tests/test_dyturbo_precision.py)
+    add_test(NAME fsr_reference_analysis COMMAND ${Python3_EXECUTABLE}
+      ${PROJECT_SOURCE_DIR}/tests/test_fsr_reference.py)
     find_program(LEPTONFF_FORTRAN_EXAMPLE_COMPILER NAMES gfortran-16 gfortran)
     set(LEPTONFF_INSTALL_TEST_ARGUMENTS "")
     if(LEPTONFF_FORTRAN_EXAMPLE_COMPILER)
@@ -69,6 +78,17 @@ else()
     add_test(NAME photonic_options COMMAND ${Python3_EXECUTABLE}
       ${PROJECT_SOURCE_DIR}/tests/test_photonic_options.py)
     if(LEPTONFF_BUILD_REFERENCE_PROGRAMS)
+      execute_process(COMMAND ${Python3_EXECUTABLE} -c "import numpy, scipy"
+        RESULT_VARIABLE LEPTONFF_AUDIT_PYTHON_STATUS OUTPUT_QUIET ERROR_QUIET)
+      if(LEPTONFF_AUDIT_PYTHON_STATUS EQUAL 0)
+        add_test(NAME radiator_validation_analysis COMMAND ${Python3_EXECUTABLE}
+          ${PROJECT_SOURCE_DIR}/tests/test_radiator_validation.py)
+        add_test(NAME mcmule_fixed_order_analysis COMMAND ${Python3_EXECUTABLE}
+          ${PROJECT_SOURCE_DIR}/tests/test_mcmule_analysis.py)
+        add_test(NAME independent_complete_mass_radiator COMMAND ${Python3_EXECUTABLE}
+          ${PROJECT_SOURCE_DIR}/adapters/validation/check_mass_radiator.py
+          --client $<TARGET_FILE:leptonff_mass_audit> --grids 4096 8192)
+      endif()
       add_test(NAME independent_photonic_nll_reference COMMAND ${Python3_EXECUTABLE}
         ${PROJECT_SOURCE_DIR}/python/check_photonic_nll_reference.py
         $<TARGET_FILE:leptonff_photonic_nll>)

@@ -58,7 +58,7 @@ def prepare(archive, directory):
             signature = re.compile(r'(theta[01]|costh|fillhisto|resint|ctint|namespace\s+DYTurbo|class\s+Kinematics)', re.I)
             for folder in ['src','histo','resum','counterterm','integrands','phasespace','born','user']:
                 for path in sorted((source/folder).rglob('*')):
-                    if path.suffix.lower() not in ['.h','.hpp','.cc','.cpp','.cxx','.f','.f90'] or not path.is_file():
+                    if path.suffix.lower() not in ['.h','.hpp','.c','.cc','.cpp','.cxx','.f','.f90'] or not path.is_file():
                         continue
                     matches = [(i,line.strip()) for i,line in enumerate(path.read_text(errors='replace').splitlines(),1) if signature.search(line)]
                     if matches:

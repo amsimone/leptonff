@@ -1,0 +1,1517 @@
+{
+  "schema": "leptonff-dyturbo-benchmark-1",
+  "date": "2026-10-18",
+  "backend": "DYTurbo 1.4.2",
+  "scope": "Native QCD production interface only. No leptonff QED decay applied; no per-bin phenomenology precision certification.",
+  "archives": {
+    "dyturbo-1.4.2.tar.gz": {
+      "url": "https://dyturbo.hepforge.org/downloads/dyturbo-1.4.2.tar.gz",
+      "sha256": "91d4ab97966a5dc88d7d63a0588bbc16a946980c57b35ae802c62d8935f94b98"
+    },
+    "LHAPDF-6.5.4.tar.gz": {
+      "url": "https://lhapdf.hepforge.org/downloads/LHAPDF-6.5.4.tar.gz",
+      "sha256": "2443a4b32cc3b0597c8248bd6e25703ace9c91a7a253c5f60b1b5428ef9c869e"
+    },
+    "Cuba-4.2.2.tar.gz": {
+      "url": "https://feynarts.de/cuba/Cuba-4.2.2.tar.gz",
+      "sha256": "8d9f532fd2b9561da2272c156ef7be5f3960953e4519c638759f1b52fe03ed52"
+    },
+    "cubature-1.0.3.tar.gz": {
+      "url": "https://codeload.github.com/stevengj/cubature/tar.gz/refs/tags/v1.0.3",
+      "sha256": "a4788fc67dc66639839e73738dc2c1df81f3a3461d35e99b4a4a49b3a9deda10"
+    },
+    "HELLx.v3.0.tgz": {
+      "url": "https://www.roma1.infn.it/~bonvini/hell/downloads/HELLx.v3.0.tgz",
+      "sha256": "0c424f09091c904683166a74e98cd1c1e53e2d83eea5fbfb16d65181b386642e"
+    },
+    "HELLx-data.v3.tgz": {
+      "url": "https://www.roma1.infn.it/~bonvini/hell/downloads/HELLx-data.v3.tgz",
+      "sha256": "f456f9d9bc34dc3b01dcac6c0cb020cd8502294e594daa4549e291b2f65e97ca"
+    }
+  },
+  "platform": {
+    "cpu": "Apple M5 Pro",
+    "os": "macOS 26.6.2",
+    "cxx": "AppleClang 21",
+    "fortran": "GNU Fortran 16.2",
+    "openmp": false,
+    "fast_math": false
+  },
+  "physics": {
+    "sqrts": 13000,
+    "ew_scheme": 1,
+    "gf": 1.1663787e-05,
+    "alpha_ew": 0.0075623956366973385,
+    "mw": 80.385,
+    "mz": 91.1876,
+    "gamma_w": 2.091,
+    "gamma_z": 2.495,
+    "muR_function": 1,
+    "muF_function": 1,
+    "muRes_function": 1,
+    "muR_factor": 0.5,
+    "muF_factor": 0.5,
+    "muRes_factor": 1,
+    "qt_cut": 0,
+    "qt_over_m_cut": 0.008,
+    "b_prescription": 0,
+    "np_form_factor": 2
+  },
+  "pdf": {
+    "name": "NNPDF31_nnlo_as_0118",
+    "member": 0,
+    "info_sha256": "6320acfbff69b7983d6f93173e4c70c2ec1bb914cdade3ba9d0dd5180e441b4c",
+    "member_sha256": "dd261226e764f3eb77c92a10bd1ed73b183db8343c9b7bdba7c31db54d966817"
+  },
+  "warnings": [
+    "Inclusive native Born-lepton phase space; NNLO quadrature with fiducial lepton cuts is unavailable in upstream 1.4.2.",
+    "All modes use one common NNLO PDF member for integrator comparisons, not an order-dependent PDF-fit study.",
+    "Errors are backend numerical estimates. Quadrature errors are not statistical confidence intervals. Low-statistics NNLO VEGAS has large real/virtual cancellations.",
+    "Default electroweak, scale, nonperturbative-resummation and qt-subtraction prescriptions are retained. No cutoff, PDF or scale uncertainty campaign is claimed.",
+    "Timings are individual local runs with varying concurrent load; they are not an isolated hardware performance study."
+  ],
+  "checks": {
+    "original_executable_six_z_modes": {
+      "nlo-nll": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      },
+      "nlo-quad": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      },
+      "nlo-vegas": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      },
+      "nnlo-nnll": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      },
+      "nnlo-quad": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      },
+      "nnlo-vegas": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      }
+    },
+    "refined_nlo_modes": {
+      "nlo-quad": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      },
+      "nlo-vegas": {
+        "status": "passed",
+        "reference_executable_sha256": "2882363f4a592b17951bdb718d0d7b8ff58c0888c0bef923caeb7c5a23f3e61f",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      }
+    },
+    "independently_bootstrapped_backend": {
+      "nlo-nll": {
+        "status": "passed",
+        "reference_executable_sha256": "e0c1ce845c472598647daae0b24967ed2dd57f5a480fbc830dda741e007e863e",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      },
+      "nlo-quad": {
+        "status": "passed",
+        "reference_executable_sha256": "e0c1ce845c472598647daae0b24967ed2dd57f5a480fbc830dda741e007e863e",
+        "scope": "Same-seed QCD-only native library client vs original executable; no QED closure claim",
+        "bins": 1,
+        "relative_tolerance": 1e-11,
+        "absolute_tolerance_fb": 1e-07
+      }
+    },
+    "targeted_ctest": {
+      "passed": 9,
+      "failed": 0,
+      "tests": [
+        "c_api",
+        "production_decay",
+        "response_table",
+        "flavours",
+        "flavour_evolution",
+        "dyturbo_source_preparation",
+        "dyturbo_interface_contract",
+        "python_bindings",
+        "python_decay_bindings"
+      ]
+    },
+    "interface_unittest_cases": 5,
+    "package_install": "passed; benchmark installed",
+    "source_distribution": "passed; adapter CMake/benchmark included, external/output/results excluded"
+  },
+  "campaigns": {
+    "z_six_mode_pilot": [
+      {
+        "mode": "nlo-nll",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1879.7904051785456,
+        "backend_error_estimate_pb": 18.92698690400263,
+        "seconds": 3.018577083,
+        "settings": {
+          "niterBORN": 2.0,
+          "niterCT": 2.0,
+          "niterVJ": 2.0,
+          "vegasncallsBORN": 20000.0,
+          "vegasncallsCT": 20000.0,
+          "vegasncallsVJLO": 20000.0,
+          "vegasncallsVJREAL": 20000.0,
+          "vegasncallsVJVIRT": 20000.0,
+          "relaccuracy": 0.02
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Resummation",
+            "method": "quadrature",
+            "value_pb": 1754.8279476512378,
+            "error_pb": 18.869037427334113,
+            "seconds": 2.1055431365966797
+          },
+          {
+            "name": "Finite order",
+            "method": "quadrature",
+            "value_pb": 124.96245752730785,
+            "error_pb": 1.4799526445637747,
+            "seconds": 0.8329050540924072
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-pilot/nlo-nll/result.json",
+        "input_sha256": "6e3909eccf27a5013a5db1f54a778bb7f99a0dfdc378a6d30bf61c275232efc4"
+      },
+      {
+        "mode": "nlo-quad",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1947.1281617993527,
+        "backend_error_estimate_pb": 78.86111081076378,
+        "seconds": 0.9139615,
+        "settings": {
+          "niterBORN": 2.0,
+          "niterCT": 2.0,
+          "niterVJ": 2.0,
+          "vegasncallsBORN": 20000.0,
+          "vegasncallsCT": 20000.0,
+          "vegasncallsVJLO": 20000.0,
+          "vegasncallsVJREAL": 20000.0,
+          "vegasncallsVJVIRT": 20000.0,
+          "relaccuracy": 0.02
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 1893.4730139298708,
+            "error_pb": 21.678402852144558,
+            "seconds": 0.0017540454864501953
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -3798.574571340792,
+            "error_pb": 17.99836239678599,
+            "seconds": 0.049204111099243164
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 3852.2297192102737,
+            "error_pb": 73.65582528980076,
+            "seconds": 0.09055805206298828
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-pilot/nlo-quad/result.json",
+        "input_sha256": "baaa889e0a41b8ab878bf7e368131f023df7bf822c85408debb6dac98fbdf31b"
+      },
+      {
+        "mode": "nlo-vegas",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1862.120335577436,
+        "backend_error_estimate_pb": 25.976322975800322,
+        "seconds": 0.469205542,
+        "settings": {
+          "niterBORN": 2.0,
+          "niterCT": 2.0,
+          "niterVJ": 2.0,
+          "vegasncallsBORN": 20000.0,
+          "vegasncallsCT": 20000.0,
+          "vegasncallsVJLO": 20000.0,
+          "vegasncallsVJREAL": 20000.0,
+          "vegasncallsVJVIRT": 20000.0,
+          "relaccuracy": 0.02
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 4,
+          "resummed": 4,
+          "counterterm": 6,
+          "vjet": 7
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "vegas",
+            "value_pb": 1836.247538711733,
+            "error_pb": 2.583310816981004,
+            "seconds": 0.3204011917114258
+          },
+          {
+            "name": "Counter term",
+            "method": "vegas",
+            "value_pb": -3815.6421076087554,
+            "error_pb": 18.15184452631194,
+            "seconds": 0.03545999526977539
+          },
+          {
+            "name": "V+J",
+            "method": "vegas",
+            "value_pb": 3841.5149044744585,
+            "error_pb": 18.401260849696136,
+            "seconds": 0.028017044067382812
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-pilot/nlo-vegas/result.json",
+        "input_sha256": "95ba7fe1d88044f970c12798fcbe38c00a2d0773aabf9f9bff11a8d20e25a1ad"
+      },
+      {
+        "mode": "nnlo-nnll",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1912.676863261468,
+        "backend_error_estimate_pb": 13.494262448190058,
+        "seconds": 80.833153666,
+        "settings": {
+          "niterBORN": 2.0,
+          "niterCT": 2.0,
+          "niterVJ": 2.0,
+          "vegasncallsBORN": 20000.0,
+          "vegasncallsCT": 20000.0,
+          "vegasncallsVJLO": 20000.0,
+          "vegasncallsVJREAL": 20000.0,
+          "vegasncallsVJVIRT": 20000.0,
+          "relaccuracy": 0.02
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Resummation",
+            "method": "quadrature",
+            "value_pb": 1760.6060514801927,
+            "error_pb": 13.310228960541076,
+            "seconds": 2.3445918560028076
+          },
+          {
+            "name": "Finite order",
+            "method": "quadrature",
+            "value_pb": 152.07081178127527,
+            "error_pb": 2.221018693889346,
+            "seconds": 78.42374014854431
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-pilot/nnlo-nnll/result.json",
+        "input_sha256": "55a6b7949e1508bf2927e8d80f113a5f4e98de4c714564fcba1a74f56f99520f"
+      },
+      {
+        "mode": "nnlo-quad",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1966.8564947085567,
+        "backend_error_estimate_pb": 39.050413266088945,
+        "seconds": 24.357634084,
+        "settings": {
+          "niterBORN": 2.0,
+          "niterCT": 2.0,
+          "niterVJ": 2.0,
+          "vegasncallsBORN": 20000.0,
+          "vegasncallsCT": 20000.0,
+          "vegasncallsVJLO": 20000.0,
+          "vegasncallsVJREAL": 20000.0,
+          "vegasncallsVJVIRT": 20000.0,
+          "relaccuracy": 0.02
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 1954.9685067738312,
+            "error_pb": 35.15534583598678,
+            "seconds": 0.0463709831237793
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -2020.772931858961,
+            "error_pb": 7.3978916232537015,
+            "seconds": 0.04069399833679199
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 2032.6609197936864,
+            "error_pb": 15.307110600472427,
+            "seconds": 24.217300176620483
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-pilot/nnlo-quad/result.json",
+        "input_sha256": "eefd4d7299613effa9bf472aabf4e8ec330e48e2c605cbc554053dd186ecd195"
+      },
+      {
+        "mode": "nnlo-vegas",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 3353.135654942027,
+        "backend_error_estimate_pb": 405.15974599567954,
+        "seconds": 16.145768709,
+        "settings": {
+          "niterBORN": 2.0,
+          "niterCT": 2.0,
+          "niterVJ": 2.0,
+          "vegasncallsBORN": 20000.0,
+          "vegasncallsCT": 20000.0,
+          "vegasncallsVJLO": 20000.0,
+          "vegasncallsVJREAL": 20000.0,
+          "vegasncallsVJVIRT": 20000.0,
+          "relaccuracy": 0.02
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 4,
+          "resummed": 4,
+          "counterterm": 6,
+          "vjet": 7
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "vegas",
+            "value_pb": 1894.2182979261515,
+            "error_pb": 2.6698254464255133,
+            "seconds": 15.662046909332275
+          },
+          {
+            "name": "Counter term",
+            "method": "vegas",
+            "value_pb": -2019.5278109820297,
+            "error_pb": 26.774043761295744,
+            "seconds": 0.06422185897827148
+          },
+          {
+            "name": "V+J Real",
+            "method": "vegas",
+            "value_pb": -3108.18610815329,
+            "error_pb": 376.71926010270244,
+            "seconds": 0.20656800270080566
+          },
+          {
+            "name": "V+J Virtual",
+            "method": "vegas",
+            "value_pb": 6586.631276151195,
+            "error_pb": 146.67324723926257,
+            "seconds": 0.144881010055542
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-pilot/nnlo-vegas/result.json",
+        "input_sha256": "f98dbf0586b3633f603b5b3c46737aa5cabfd7276ba1e4c4e23ed3c9998d2e26"
+      }
+    ],
+    "wplus_six_mode_pilot": [
+      {
+        "mode": "nlo-nll",
+        "process": 1,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          60,
+          100
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 11012.367665813146,
+        "backend_error_estimate_pb": 18.384195537118217,
+        "seconds": 6.214835917,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Resummation",
+            "method": "quadrature",
+            "value_pb": 10177.808695610984,
+            "error_pb": 18.381388049623,
+            "seconds": 2.300658941268921
+          },
+          {
+            "name": "Finite order",
+            "method": "quadrature",
+            "value_pb": 834.5589702021631,
+            "error_pb": 0.32127700847422236,
+            "seconds": 3.8367650508880615
+          }
+        ],
+        "local_result": "results/dyturbo-native-wp-pilot/nlo-nll/result.json",
+        "input_sha256": "a838192302b298caf7ff4a0dd9f00c69a04de22b9ae935f6f599dc3979aa6375"
+      },
+      {
+        "mode": "nlo-quad",
+        "process": 1,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          60,
+          100
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 11059.423443595711,
+        "backend_error_estimate_pb": 17.002164637701398,
+        "seconds": 0.823319375,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 10703.160937891935,
+            "error_pb": 16.69552850053832,
+            "seconds": 0.004659891128540039
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -22502.384500741962,
+            "error_pb": 2.274179371934384,
+            "seconds": 0.04182910919189453
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 22858.64700644574,
+            "error_pb": 2.2717919445857406,
+            "seconds": 0.7181878089904785
+          }
+        ],
+        "local_result": "results/dyturbo-native-wp-pilot/nlo-quad/result.json",
+        "input_sha256": "6a4f16f78913e4ad5e51114a7ae1dbe5e9c13015a30d45951b0989a9b368cd1e"
+      },
+      {
+        "mode": "nlo-vegas",
+        "process": 1,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          60,
+          100
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 11069.395708009446,
+        "backend_error_estimate_pb": 81.15450130342447,
+        "seconds": 2.202631375,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 4,
+          "resummed": 4,
+          "counterterm": 6,
+          "vjet": 7
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "vegas",
+            "value_pb": 10699.790090570716,
+            "error_pb": 14.450454271199499,
+            "seconds": 1.7816860675811768
+          },
+          {
+            "name": "Counter term",
+            "method": "vegas",
+            "value_pb": -22471.695481477258,
+            "error_pb": 56.57262249141122,
+            "seconds": 0.18813490867614746
+          },
+          {
+            "name": "V+J",
+            "method": "vegas",
+            "value_pb": 22841.30109891599,
+            "error_pb": 56.362894155709995,
+            "seconds": 0.17108702659606934
+          }
+        ],
+        "local_result": "results/dyturbo-native-wp-pilot/nlo-vegas/result.json",
+        "input_sha256": "ac288975c543831dd1ed18d128c7cabd870ee5dba957a49f18421dd01f9f2e5e"
+      },
+      {
+        "mode": "nnlo-nnll",
+        "process": 1,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          60,
+          100
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 11265.228449642047,
+        "backend_error_estimate_pb": 13.527702359880717,
+        "seconds": 354.309546417,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Resummation",
+            "method": "quadrature",
+            "value_pb": 10209.044055855731,
+            "error_pb": 13.516658430466428,
+            "seconds": 1.2574679851531982
+          },
+          {
+            "name": "Finite order",
+            "method": "quadrature",
+            "value_pb": 1056.1843937863164,
+            "error_pb": 0.5465125905440654,
+            "seconds": 352.99289202690125
+          }
+        ],
+        "local_result": "results/dyturbo-native-wp-pilot/nnlo-nnll/result.json",
+        "input_sha256": "8593682321276ce22a5f923043a7b68bfb29bdfcb58646394ce87090dfe4975c"
+      },
+      {
+        "mode": "nnlo-quad",
+        "process": 1,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          60,
+          100
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 11268.408211817276,
+        "backend_error_estimate_pb": 30.89987140477291,
+        "seconds": 18.483069667,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 11108.319638586823,
+            "error_pb": 19.933543976904826,
+            "seconds": 0.2863771915435791
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -11720.052883673823,
+            "error_pb": 21.069799521837382,
+            "seconds": 0.008796930313110352
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 11880.141456904275,
+            "error_pb": 10.654549519425258,
+            "seconds": 18.12839388847351
+          }
+        ],
+        "local_result": "results/dyturbo-native-wp-pilot/nnlo-quad/result.json",
+        "input_sha256": "506d570c91602d5ec7ee51589ae3b8c2dcf9df91b8f04bd8d48da76d18659f12"
+      },
+      {
+        "mode": "nnlo-vegas",
+        "process": 1,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          60,
+          100
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 15030.034637028739,
+        "backend_error_estimate_pb": 2870.5383334171315,
+        "seconds": 98.67478325,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 4,
+          "resummed": 4,
+          "counterterm": 6,
+          "vjet": 7
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "vegas",
+            "value_pb": 11104.427109124523,
+            "error_pb": 15.082482933527452,
+            "seconds": 96.52516794204712
+          },
+          {
+            "name": "Counter term",
+            "method": "vegas",
+            "value_pb": -11647.080686051158,
+            "error_pb": 75.0130883392045,
+            "seconds": 0.38728785514831543
+          },
+          {
+            "name": "V+J Real",
+            "method": "vegas",
+            "value_pb": -23904.60343880896,
+            "error_pb": 2839.6305715229705,
+            "seconds": 1.2276089191436768
+          },
+          {
+            "name": "V+J Virtual",
+            "method": "vegas",
+            "value_pb": 39477.29165276433,
+            "error_pb": 413.0788014116754,
+            "seconds": 0.4689040184020996
+          }
+        ],
+        "local_result": "results/dyturbo-native-wp-pilot/nnlo-vegas/result.json",
+        "input_sha256": "5ce79f582187fe39df917bb04a2542add67225f0449cfae3202815106a4a9776"
+      }
+    ],
+    "z_nlo_refinement": [
+      {
+        "mode": "nlo-quad",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1884.4038087106876,
+        "backend_error_estimate_pb": 0.1686581981237681,
+        "seconds": 2.87704525,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 300000.0,
+          "vegasncallsCT": 300000.0,
+          "vegasncallsVJLO": 300000.0,
+          "vegasncallsVJREAL": 300000.0,
+          "vegasncallsVJVIRT": 300000.0,
+          "relaccuracy": 0.0002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 1839.8897877984637,
+            "error_pb": 0.05805981750180945,
+            "seconds": 0.038378000259399414
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -3799.5459960503617,
+            "error_pb": 0.031042436461430043,
+            "seconds": 0.1477651596069336
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 3844.0600169625855,
+            "error_pb": 0.15527721186494456,
+            "seconds": 2.622497081756592
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-nlo-check/nlo-quad/result.json",
+        "input_sha256": "7e43d5f0099276b98aeebd628efa620ab3201272f730310594bc473b38a6349a"
+      },
+      {
+        "mode": "nlo-vegas",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1882.5872847610774,
+        "backend_error_estimate_pb": 6.275996181888354,
+        "seconds": 6.307016208,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 300000.0,
+          "vegasncallsCT": 300000.0,
+          "vegasncallsVJLO": 300000.0,
+          "vegasncallsVJREAL": 300000.0,
+          "vegasncallsVJVIRT": 300000.0,
+          "relaccuracy": 0.0002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 4,
+          "resummed": 4,
+          "counterterm": 6,
+          "vjet": 7
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "vegas",
+            "value_pb": 1839.7936912249613,
+            "error_pb": 0.5805923028441304,
+            "seconds": 5.2543370723724365
+          },
+          {
+            "name": "Counter term",
+            "method": "vegas",
+            "value_pb": -3804.7875849172356,
+            "error_pb": 4.30917261557506,
+            "seconds": 0.5330898761749268
+          },
+          {
+            "name": "V+J",
+            "method": "vegas",
+            "value_pb": 3847.5811784533516,
+            "error_pb": 4.525712322069681,
+            "seconds": 0.45931482315063477
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-nlo-check/nlo-vegas/result.json",
+        "input_sha256": "9b914b5f59d7a898e2e4f9266efc0445cfab3b94d6489da551ebbb1ac8fba13d"
+      }
+    ],
+    "z_nnlo_quadrature_refinement": [
+      {
+        "mode": "nnlo-quad",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1909.5859484507541,
+        "backend_error_estimate_pb": 0.7467789618966094,
+        "seconds": 221.017125125,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 1897.9491305961533,
+            "error_pb": 0.4449403315098025,
+            "seconds": 1.205399990081787
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -2021.1974367980463,
+            "error_pb": 0.42450493908533826,
+            "seconds": 0.13272380828857422
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 2032.8342546526474,
+            "error_pb": 0.4236773253544234,
+            "seconds": 219.5839080810547
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-nnlo-quad-check/nnlo-quad/result.json",
+        "input_sha256": "6f745481f55c780fb2b2588075aa4390a6efd330ddedd1090be6c9c208fd6051"
+      }
+    ],
+    "z_nnlo_vegas_refinement": [
+      {
+        "mode": "nnlo-vegas",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 2159.2991368990315,
+        "backend_error_estimate_pb": 154.62630857585353,
+        "seconds": 268.275973708,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 300000.0,
+          "vegasncallsCT": 300000.0,
+          "vegasncallsVJLO": 300000.0,
+          "vegasncallsVJREAL": 300000.0,
+          "vegasncallsVJVIRT": 300000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 2,
+          "hard": 2,
+          "evolution": 2,
+          "exponentiation": 2,
+          "counterterm": 2,
+          "vjet": 2
+        },
+        "dimensions": {
+          "born": 4,
+          "resummed": 4,
+          "counterterm": 6,
+          "vjet": 7
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "vegas",
+            "value_pb": 1897.8703732661152,
+            "error_pb": 0.600332840904742,
+            "seconds": 259.18821597099304
+          },
+          {
+            "name": "Counter term",
+            "method": "vegas",
+            "value_pb": -2016.7859340844525,
+            "error_pb": 6.434971309570715,
+            "seconds": 1.4955029487609863
+          },
+          {
+            "name": "V+J Real",
+            "method": "vegas",
+            "value_pb": -4282.10312420056,
+            "error_pb": 151.39751504939179,
+            "seconds": 4.4829840660095215
+          },
+          {
+            "name": "V+J Virtual",
+            "method": "vegas",
+            "value_pb": 6560.317821917929,
+            "error_pb": 30.76228998935874,
+            "seconds": 3.0531139373779297
+          }
+        ],
+        "local_result": "results/dyturbo-native-z-nnlo-vegas-check/nnlo-vegas/result.json",
+        "input_sha256": "8466ac91af1e70d161c7cf46f03a4caa784615eb396471bfc02b66940b3a54a6"
+      }
+    ],
+    "independently_bootstrapped_backend": [
+      {
+        "mode": "nlo-nll",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1878.4691510276505,
+        "backend_error_estimate_pb": 1.6406767596727625,
+        "seconds": 15.85203375,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Resummation",
+            "method": "quadrature",
+            "value_pb": 1753.585782696824,
+            "error_pb": 1.6371950526724104,
+            "seconds": 8.562997817993164
+          },
+          {
+            "name": "Finite order",
+            "method": "quadrature",
+            "value_pb": 124.88336833082644,
+            "error_pb": 0.10682972074895224,
+            "seconds": 7.207831859588623
+          }
+        ],
+        "local_result": "results/dyturbo-repro-z/nlo-nll/result.json",
+        "input_sha256": "621ca30cb40efc05f2a5434862ba04cce60d6be46f8e05f8b82513634da120a3"
+      },
+      {
+        "mode": "nlo-quad",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1884.390444975452,
+        "backend_error_estimate_pb": 1.4021617195534017,
+        "seconds": 2.2826015,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 1839.8766437168192,
+            "error_pb": 0.4236535092906561,
+            "seconds": 0.0176849365234375
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -3799.5149536139,
+            "error_pb": 0.9403822731082327,
+            "seconds": 0.0853271484375
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 3844.028754872533,
+            "error_pb": 0.9498717662245035,
+            "seconds": 1.4463651180267334
+          }
+        ],
+        "local_result": "results/dyturbo-repro-z/nlo-quad/result.json",
+        "input_sha256": "cb1a89d1eba89ed413787d3fec26e893ebb556aed2273d29763ba7293d77ad5f"
+      }
+    ],
+    "resolved_physics_metadata_check": [
+      {
+        "mode": "nlo-quad",
+        "process": 3,
+        "scope": "QCD production; no leptonff decay applied",
+        "mass_GeV": [
+          66,
+          116
+        ],
+        "qt_GeV": [
+          0,
+          6500
+        ],
+        "rapidity": [
+          -10,
+          10
+        ],
+        "cross_section_pb": 1884.390444975452,
+        "backend_error_estimate_pb": 1.4021617195534017,
+        "seconds": 1.499514958,
+        "settings": {
+          "niterBORN": 5.0,
+          "niterCT": 5.0,
+          "niterVJ": 5.0,
+          "vegasncallsBORN": 100000.0,
+          "vegasncallsCT": 100000.0,
+          "vegasncallsVJLO": 100000.0,
+          "vegasncallsVJREAL": 100000.0,
+          "vegasncallsVJVIRT": 100000.0,
+          "relaccuracy": 0.002
+        },
+        "orders": {
+          "sudakov": 1,
+          "hard": 1,
+          "evolution": 1,
+          "exponentiation": 1,
+          "counterterm": 1,
+          "vjet": 1
+        },
+        "dimensions": {
+          "born": 2,
+          "resummed": 1,
+          "counterterm": 1,
+          "vjet": 3
+        },
+        "terms": [
+          {
+            "name": "Fixed born",
+            "method": "quadrature",
+            "value_pb": 1839.8766437168192,
+            "error_pb": 0.4236535092906561,
+            "seconds": 0.016412973403930664
+          },
+          {
+            "name": "Counter term",
+            "method": "quadrature",
+            "value_pb": -3799.5149536139,
+            "error_pb": 0.9403822731082327,
+            "seconds": 0.07737493515014648
+          },
+          {
+            "name": "V+J",
+            "method": "quadrature",
+            "value_pb": 3844.028754872533,
+            "error_pb": 0.9498717662245035,
+            "seconds": 1.332207202911377
+          }
+        ],
+        "local_result": "results/dyturbo-native-final-z/nlo-quad/result.json",
+        "input_sha256": "cb1a89d1eba89ed413787d3fec26e893ebb556aed2273d29763ba7293d77ad5f"
+      }
+    ]
+  },
+  "remaining": [
+    "Native radiative angular/subtraction measurement coupling and QED-off closure",
+    "Angular-resolved NNLO information for fully quadrature fiducial spectra",
+    "Precision campaigns, independent seeds, qt-cutoff and scale/PDF controls",
+    "Reusable production coefficients/variation weights and validated response interpolation"
+  ]
+}

@@ -118,7 +118,10 @@ install(DIRECTORY examples/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples
   FILES_MATCHING PATTERN "CMakeLists.txt" PATTERN "*.cpp" PATTERN "*.c" PATTERN "*.f90" PATTERN "*.py")
 install(DIRECTORY benchmarks/canonical DESTINATION ${CMAKE_INSTALL_DOCDIR}/benchmarks
   FILES_MATCHING PATTERN "*.json" PATTERN "*.md")
-install(FILES benchmarks/architecture_0_27.json DESTINATION ${CMAKE_INSTALL_DOCDIR}/benchmarks)
+install(FILES benchmarks/architecture_0_27.json benchmarks/dyturbo_native_1_4_2.json benchmarks/dyturbo_qed_mass.json
+  benchmarks/dyturbo_w_decay.json benchmarks/dyturbo_mass_photos.json
+  benchmarks/z_accuracy_scales.json benchmarks/z_radiator_validation.json
+  DESTINATION ${CMAKE_INSTALL_DOCDIR}/benchmarks)
 install(FILES bindings/fortran/leptonff.f90 DESTINATION ${CMAKE_INSTALL_DATADIR}/leptonff/fortran)
 configure_package_config_file(cmake/leptonffConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/leptonffConfig.cmake

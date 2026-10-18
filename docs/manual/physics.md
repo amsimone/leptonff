@@ -101,8 +101,10 @@ total**: boundary, hard coefficient, or the NLO photonic evolution insertion.
 Multiplying independently truncated leg factors can introduce unwanted terms.
 
 The Z hard response supports parity-even, charge-symmetric measurements.
-Complete off-shell EW corrections, complete mixed QCD/EW corrections and native
-DYTurbo NNLO+NNLL predictions are outside the implemented scope.
+Complete off-shell EW corrections and complete mixed QCD/EW corrections are
+outside the implemented scope. The optional DYTurbo adapter supplies native
+QCD production, including NNLO+NNLL, under its separately documented interface
+and validation contract; that QCD accuracy does not upgrade the QED decay.
 
 ## Production host contract
 

@@ -53,3 +53,27 @@ Historical studies remain under `benchmarks/` and the earlier topical documents
 under `docs/`. Some cite large local `results/` files excluded from the source
 distribution. They are development evidence, separate from the canonical
 redistributable benchmark and the reproducible tests above.
+
+## Complete Z radiator audit
+
+The optional research study in `docs/z_radiator_validation.md` checks the
+complete normalized two-lepton mass radiator, including its hard coefficient,
+through second order. It compares continuum moments, double-plus cumulative
+integrals, mass-log coefficients and coupling expansions with the production
+operator. Install NumPy/SciPy before configuring to enable the corresponding
+independent CTest; the full study uses finer grids than its CI counterpart.
+
+A separate pinned KKMC adapter supplies fixed-parent-mass comparisons with
+cross-order covariance and cutoff/coupling controls. It is not a library or CI
+dependency. The study resolves external residuals and keeps them distinct from
+the successful implementation checks. Neither those checks nor the QED scale
+and matching-prescription variations establish a total phenomenological error.
+
+The later optional study in `docs/mcmule_fixed_order.md` uses pinned McMule
+real–virtual/double-real photonic FSR with the inclusive NLO normalization
+counterterm. A six-Q scan of strict second-order moments is consistent with
+finite constant remainders after subtracting the NLL expansion. Independent
+phase-space-volume and FKS/technical controls accompany it. This supports the
+mass-log coefficients of the tested inclusive vector observable; sharp endpoint
+cumulatives and full finite NNLO matching remain separate precision tasks.
+`docs/computation_report.md` inventories physical inputs, evidence and exclusions.
