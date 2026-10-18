@@ -13,6 +13,14 @@ public:
              const IntegrationOptions& options = {},
              const std::vector<Real>& breakpoints = {}) const;
   Real moment(Real N, const IntegrationOptions& options = {}) const;
+  // Integral over [lower,upper); the final bin with upper=1 includes the
+  // endpoint distribution. Known edges are supplied to the quadrature.
+  Real integral(Real lower, Real upper,
+                const IntegrationOptions& options = {}) const;
+  // (D tensor f)(x) = integral_x^1 dz/z D(z) f(x/z), including the
+  // endpoint and whole-plus subtraction. f must be smooth on [x,1].
+  Real convolve(const Function& f, Real x,
+                const IntegrationOptions& options = {}) const;
   // Interior real-emission density regular(z)+sum plus_i(z), 0<z<1.
   // Does not include delta/endpoint subtraction; not a complete FF by itself.
   Real resolved_density(Real z) const;

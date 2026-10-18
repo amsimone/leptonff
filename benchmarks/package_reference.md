@@ -1,4 +1,8 @@
-# Version 0.25 package and replay validation
+# Historical version 0.25 package and replay validation
+
+For current packaging/interface checks, see the
+[scientific package validation](scientific_package_reference.md). This page
+retains the earlier milestone record.
 
 The generator-independent library, C/Fortran ABI, configurable laboratory
 bins, signed production archive and multi-model replay are implemented.

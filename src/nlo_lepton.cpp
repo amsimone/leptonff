@@ -1,5 +1,5 @@
 #include "leptonff/nlo_lepton.hpp"
-#include "leptonff/vector_decay.hpp"
+#include "leptonff/special_functions.hpp"
 
 #include <cmath>
 #include <stdexcept>

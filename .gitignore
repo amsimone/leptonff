@@ -23,4 +23,5 @@
 *.mod
 CMakeUserPresets.json
 __pycache__/
+*.egg-info/
 .DS_Store

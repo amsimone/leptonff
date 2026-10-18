@@ -1,5 +1,9 @@
 # Implementation status
 
+For the current package layout, interfaces and scientific contract, see the
+[version 0.26 manual](manual/index.md). The operational history below records
+the preceding physics and generator milestones.
+
 Version 0.25 packages the generator-independent decay/tensor response as an
 installable C++ library and C/Fortran interface, with configurable bins,
 grouped production archives and checksum-verified multi-model replay.

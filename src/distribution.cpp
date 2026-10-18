@@ -48,6 +48,22 @@ Real Distribution::moment(Real N, const IntegrationOptions& options) const {
   return apply([N](Real z) { return std::pow(z, N - 1); }, 0, options);
 }
 
+Real Distribution::integral(Real lower, Real upper,
+                            const IntegrationOptions& options) const {
+  if (!std::isfinite(lower) || !std::isfinite(upper) ||
+      lower < 0 || lower >= upper || upper > 1)
+    throw std::invalid_argument("Distribution bin requires 0<=lower<upper<=1");
+  return apply([upper](Real z) { return z <= upper ? 1.0L : 0.0L; },
+               lower, options, upper < 1 ? std::vector<Real>{upper} : std::vector<Real>{});
+}
+
+Real Distribution::convolve(const Function& f, Real x,
+                            const IntegrationOptions& options) const {
+  if (!f || !std::isfinite(x) || x <= 0 || x >= 1)
+    throw std::invalid_argument("Convolution requires a function and 0<x<1");
+  return apply([&](Real z) { return f(x/z)/z; }, x, options);
+}
+
 Distribution Distribution::scaled(Real factor) const {
   if (!std::isfinite(factor)) throw std::invalid_argument("Non-finite scaling");
   if (factor == 0) return {};

@@ -1,4 +1,5 @@
 #include "leptonff/c_api.h"
+#include "api_error.hpp"
 #include "leptonff/production_decay.hpp"
 #include "leptonff/hadronic_input.hpp"
 #include <algorithm>
@@ -8,13 +9,15 @@
 
 using namespace leptonff;
 namespace {
-thread_local std::string last_error;
+using leptonff::detail::guarded;
+bool neutral(int p) { return p==LEPTONFF_PROCESS_Z || p==LEPTONFF_Z; }
+bool positive(int p) { return p==LEPTONFF_PROCESS_W_PLUS || p==LEPTONFF_WPLUS; }
 FourVector vector(const double* p) {if(!p)throw std::invalid_argument("Null momentum");return {p[0],p[1],p[2],p[3]};}
 DecayConfiguration configuration(const leptonff_decay_config& c) {
   if(c.struct_size!=sizeof(c) || c.abi_version!=LEPTONFF_ABI_VERSION)throw std::invalid_argument("Unsupported leptonff configuration ABI");
   DecayConfiguration q;
-  if(c.process!=1 && c.process!=6 && c.process!=31)throw std::invalid_argument("Unsupported W/Z process");
-  q.process=c.process==31?SpinDecay::neutral_vector:c.process==1?SpinDecay::wplus:SpinDecay::wminus;
+  if(!positive(c.process) && !neutral(c.process) && c.process!=LEPTONFF_PROCESS_W_MINUS && c.process!=LEPTONFF_WMINUS)throw std::invalid_argument("Unsupported W/Z process");
+  q.process=neutral(c.process)?SpinDecay::neutral_vector:positive(c.process)?SpinDecay::wplus:SpinDecay::wminus;
   q.evolution.muon_mass=c.muon_mass;q.evolution.mu_0=c.muon_mass;
   q.evolution.mu_frag=c.mu_frag;q.evolution.alpha_msbar_at_mu0=c.alpha;
   q.grid.bins=c.grid_bins;q.grid.log_span=c.log_span;q.hard_samples=c.hard_samples;
@@ -34,8 +37,8 @@ DecayConfiguration configuration(const leptonff_decay_config& c) {
 LabSpectrum spectrum(const leptonff_decay_config& c,const leptonff_observable* obs,size_t count) {
   WLabCuts w;w.muon_pt_min=c.muon_pt_min;w.muon_eta_max=c.muon_eta_max;w.neutrino_pt_min=c.neutrino_pt_min;w.transverse_mass_min=c.transverse_mass_min;
   FiducialCuts z;z.pt_min=c.muon_pt_min;z.eta_max=c.muon_eta_max;z.mass_min=c.mass_min;z.mass_max=c.mass_max;
-  const bool neutral=c.process==31;
-  auto bins=LabSpectrum::reference_binning(neutral);
+  const bool is_neutral=neutral(c.process);
+  auto bins=LabSpectrum::reference_binning(is_neutral);
   if(count) {
     if(!obs)throw std::invalid_argument("Null observable definitions");
     bins.clear();
@@ -45,13 +48,9 @@ LabSpectrum spectrum(const leptonff_decay_config& c,const leptonff_observable* o
       for(size_t i=0;i<obs[k].edge_count;++i)bins.back().edges.push_back(obs[k].edges[i]);
     }
   }
-  return LabSpectrum::configured(neutral,bins,w,z);
+  return LabSpectrum::configured(is_neutral,bins,w,z);
 }
-template<class F> int guarded(F&& action) noexcept {
-  try {last_error.clear();action();return 0;}
-  catch(const std::exception& e){last_error=e.what();return 1;}
-  catch(...){last_error="Unknown leptonff failure";return 1;}
-}
+
 }
 struct leptonff_decay_context {
   DecayCalculator calculator;LabSpectrum selections;
@@ -102,5 +101,4 @@ int leptonff_decay_response(const leptonff_decay_context* c,const double* q,uint
     store(response.total);for(const auto& b:response.bins)store(b);
   });
 }
-const char* leptonff_last_error() {return last_error.c_str();}
 }

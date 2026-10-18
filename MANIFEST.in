@@ -1,0 +1,15 @@
+include CMakeLists.txt Doxyfile *.md *.cff LICENSE THIRD_PARTY_NOTICES.md
+recursive-include include *.hpp *.h
+recursive-include src *.cpp *.hpp
+recursive-include cmake *.in
+recursive-include bindings *.py *.f90
+recursive-include examples *.cpp *.c *.f90 *.py CMakeLists.txt
+recursive-include tests *.cpp *.hpp *.c *.py CMakeLists.txt
+recursive-include apps *.cpp *.hpp CMakeLists.txt
+recursive-include configs *.conf *.dat
+recursive-include docs *.md *.rst *.py *.txt
+recursive-include benchmarks *.md *.json
+recursive-include python *.py
+recursive-include adapters *.cpp *.hpp *.py *.f90 LICENSE
+recursive-include LICENSES *.txt
+global-exclude __pycache__ *.py[cod] .DS_Store

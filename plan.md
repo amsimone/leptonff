@@ -1,5 +1,11 @@
 # Bare-muon W/Z production with lepton fragmentation — implementation plan
 
+Package refactor (0.26): standalone fragmentation/evolution core, explicit
+alpha inputs, distribution convolution/bin APIs, numerical Python bindings,
+installed Fortran module, scientific manual and canonical benchmarks. See
+[the current manual](docs/manual/index.md). The physics development history
+and outstanding phenomenology goals below remain applicable.
+
 Version 0.25 packages the generator-independent decay/tensor response as an
 installable C++ library and C/Fortran interface, with configurable bins,
 grouped production archives and checksum-verified multi-model replay.

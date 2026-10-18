@@ -1,3 +1,7 @@
 @PACKAGE_INIT@
 include("${CMAKE_CURRENT_LIST_DIR}/leptonffTargets.cmake")
+set(leptonff_core_FOUND TRUE)
+set(leptonff_matched_FOUND @LEPTONFF_BUILD_MATCHED@)
+set(leptonff_fortran_FOUND @LEPTONFF_BUILD_FORTRAN@)
+set(leptonff_FORTRAN_SOURCE "${PACKAGE_PREFIX_DIR}/@CMAKE_INSTALL_DATADIR@/leptonff/fortran/leptonff.f90")
 check_required_components(leptonff)

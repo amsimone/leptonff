@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "description": "One-family timelike MSbar O(alpha) fragmentation; analytic moments and whole-plus P0 actions",
+  "inputs": {
+    "alpha": 0.0072973525692838015,
+    "muon_mass": 0.1056583755,
+    "initial_scale": 0.1056583755,
+    "final_scale": 91.1876
+  },
+  "absolute_tolerance": 1e-10,
+  "values": {
+    "ff_N1": 1.0,
+    "ff_N2": 0.9768684454148703,
+    "ff_N3": 0.9630100846971722,
+    "kernel_bin": 1.2366585060234525,
+    "kernel_endpoint_bin": -1.462945608651872,
+    "kernel_convolution": 1.2906229164484715
+  }
+}

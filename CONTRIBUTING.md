@@ -8,7 +8,8 @@ statistical errors from quadrature, grid and theory uncertainties.
 Build and run the standalone checks before submitting a pull request:
 
 ```sh
-cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=ON \
+  -DLEPTONFF_BUILD_REFERENCE_PROGRAMS=ON
 cmake --build build --parallel 4
 ctest --test-dir build --output-on-failure --parallel 4
 ```
@@ -18,6 +19,7 @@ signed-event covariance, replay and relocated package consumers. Optional host
 campaigns require separate installations and are not run by public CI. Plotting
 additionally needs NumPy and Matplotlib; core tests use Python's standard library.
 
+Start with the [scientific manual](docs/manual/index.md) and its interface policy.
 For physics changes document approximations, coupling/normalisation conventions,
 source references and relevant limits. Add meaningful independent or regression
 checks where appropriate. Preserve signed subtraction groups and common radiation

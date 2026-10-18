@@ -1,5 +1,6 @@
 #pragma once
 #include "leptonff/xspace_evolution.hpp"
+#include "leptonff/decay.hpp"
 #include "leptonff/evolution.hpp"
 #include <optional>
 

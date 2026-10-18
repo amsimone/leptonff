@@ -1,5 +1,9 @@
 # Installing and using leptonff
 
+For current installation, component selection and bindings see the
+[scientific manual](manual/index.md). The archive/host contracts below remain
+applicable in version 0.26. Reference executables now reside under `build/apps/`.
+
 Version 0.25 separates the generator-independent decay calculation from the
 MCFM adapter. The package contains a C++17 library, a versioned C interface,
 a standalone production replay program and a checksum-verifying Python
@@ -20,7 +24,7 @@ Static builds remain available with `BUILD_SHARED_LIBS=OFF` (the default).
 The existing MCFM relinker needs a static core build using the host's
 compatible GCC/libstdc++ ABI. It is deliberately separate from installation.
 
-Consumers use `find_package(leptonff 0.25 CONFIG REQUIRED)` and link
+Consumers use `find_package(leptonff 0.26 CONFIG REQUIRED)` and link
 `leptonff::leptonff`. See `examples/cpp`, `examples/c_api` and
 `examples/fortran`. The installation is relocatable; the examples are tested
 against a moved installation directory, without source/build include paths.

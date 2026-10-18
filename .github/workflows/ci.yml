@@ -54,6 +54,8 @@ jobs:
         run: >-
           cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
           -DBUILD_TESTING=ON -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+          -DLEPTONFF_BUILD_REFERENCE_PROGRAMS=ON
+          -DLEPTONFF_BUILD_FORTRAN=${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
           -DPython3_EXECUTABLE="$(command -v python3)"
       - name: Build
         run: cmake --build build --parallel 4
@@ -62,4 +64,50 @@ jobs:
       - name: Install package
         run: cmake --install build --prefix "$PWD/install"
       - name: Check Python entry points
-        run: python3 -m compileall -q python adapters tests
+        run: python3 -m compileall -q bindings/python python adapters tests
+
+  core-only:
+    name: Standalone evolution core
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Configure core without matched processes
+        run: >-
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          -DLEPTONFF_BUILD_MATCHED=OFF -DBUILD_SHARED_LIBS=ON
+      - run: cmake --build build --parallel 4
+      - run: ctest --test-dir build --output-on-failure --parallel 4
+
+  documentation-and-python:
+    name: Manual and Python distribution
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - run: python3 -m pip install -r docs/manual/requirements.txt build
+      - run: sphinx-build -W --keep-going -b html docs/manual build/manual
+      - run: sudo apt-get update && sudo apt-get install -y doxygen
+      - run: doxygen Doxyfile
+      - run: python3 -m build --outdir dist
+      - name: Install wheel
+        run: python3 -m pip install dist/*.whl
+      - name: Build native core from source distribution
+        run: |
+          mkdir source-distribution
+          tar xzf dist/leptonff-*.tar.gz -C source-distribution --strip-components=1
+          cmake -S source-distribution -B build-sdist -DCMAKE_BUILD_TYPE=Release -DLEPTONFF_BUILD_MATCHED=OFF -DBUILD_SHARED_LIBS=ON
+          cmake --build build-sdist --parallel 4
+          ctest --test-dir build-sdist --output-on-failure --parallel 4
+      - name: Exercise installed Python numerical package
+        env:
+          LEPTONFF_LIBRARY: ${{ github.workspace }}/build-sdist/libleptonff_core.so
+        run: python3 examples/python/fragmentation.py

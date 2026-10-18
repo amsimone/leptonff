@@ -6,13 +6,19 @@
 extern "C" {
 #endif
 #define LEPTONFF_ABI_VERSION 1
+#include "leptonff/fragmentation_c.h"
 typedef struct leptonff_decay_context leptonff_decay_context;
+/* Generator-independent process identifiers (PDG boson IDs). Legacy 1,6,31
+ * remain accepted by ABI v1 for existing clients. */
+enum {LEPTONFF_PROCESS_W_PLUS=24,LEPTONFF_PROCESS_W_MINUS=-24,LEPTONFF_PROCESS_Z=23};
 enum {LEPTONFF_WPLUS=1,LEPTONFF_WMINUS=6,LEPTONFF_Z=31};
 enum {LEPTONFF_PHOTONIC_LL=1,LEPTONFF_PHOTONIC_NLL=2,LEPTONFF_LEPTONIC_NLL=3,LEPTONFF_QED_HVP=4};
 typedef struct {
   size_t struct_size;
   unsigned abi_version;
   int process,model;
+  /* ABI-v1 presets: alpha is fixed in photonic modes, on-shell in the
+   * leptonic/HVP presets. Use the explicit C++ theory API for MSbar input. */
   double alpha,muon_mass,mu_frag;
   size_t grid_bins;
   double log_span;

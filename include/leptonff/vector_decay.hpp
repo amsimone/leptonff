@@ -1,6 +1,7 @@
 #pragma once
 
 #include "leptonff/fragmentation.hpp"
+#include "leptonff/special_functions.hpp"
 
 namespace leptonff {
 // Angular-inclusive unpolarised VECTOR current only, z=m_mumu^2/M^2.
@@ -10,8 +11,6 @@ Distribution vector_mass_hard_coefficient(Real parent_mass, Real mu_frag);
 Distribution vector_mass_leading_power_coefficient(Real parent_mass, Real muon_mass);
 Distribution vector_mass_ff_coefficient(const QEDParameters& parameters);
 
-// Real dilogarithm on (-infinity,1], used by the massive analytic reference.
-Real real_dilogarithm(Real x);
 
 Real massive_vector_born_ratio(Real parent_mass, Real muon_mass);
 // Exact massive real spectrum, coefficient dC/dz; zero below pair threshold.

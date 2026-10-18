@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 3.16)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+  project(leptonff_fragmentation_example LANGUAGES CXX)
+  find_package(leptonff 0.26 CONFIG REQUIRED COMPONENTS core)
+endif()
+add_executable(leptonff_fragmentation_example main.cpp)
+target_link_libraries(leptonff_fragmentation_example PRIVATE leptonff::core)
