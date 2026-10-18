@@ -1,0 +1,4 @@
+# name charge colours pole_mass_GeV matching_scale_GeV (0 means mass)
+e   -1 1 0.00051099895069 0
+mu  -1 1 0.1056583755     0
+tau -1 1 1.77693          0

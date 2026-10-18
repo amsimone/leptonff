@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: >-
+  If you use leptonff, cite this software version and the physics sources
+  relevant to the calculation, documented in docs/.
+type: software
+title: "leptonff: lepton fragmentation and matched final-state QED"
+authors:
+  - family-names: Amoroso
+    given-names: Simone
+version: 0.25.0
+license:
+  - MIT
+  - GPL-3.0-or-later
+keywords:
+  - lepton fragmentation
+  - QED
+  - Drell-Yan
+  - W and Z bosons

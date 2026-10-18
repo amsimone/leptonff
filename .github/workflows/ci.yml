@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux GCC static
+            os: ubuntu-24.04
+            cc: gcc
+            cxx: g++
+            shared: 'OFF'
+          - name: Linux GCC shared
+            os: ubuntu-24.04
+            cc: gcc
+            cxx: g++
+            shared: 'ON'
+          - name: macOS Clang shared
+            os: macos-14
+            cc: clang
+            cxx: clang++
+            shared: 'ON'
+    env:
+      CC: ${{ matrix.cc }}
+      CXX: ${{ matrix.cxx }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: '3.12'
+      - name: Install Fortran compiler
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y gfortran
+      - name: Configure
+        run: >-
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          -DBUILD_TESTING=ON -DBUILD_SHARED_LIBS=${{ matrix.shared }}
+          -DPython3_EXECUTABLE="$(command -v python3)"
+      - name: Build
+        run: cmake --build build --parallel 4
+      - name: Test core, independent references, replay and installed consumers
+        run: ctest --test-dir build --output-on-failure --parallel 4
+      - name: Install package
+        run: cmake --install build --prefix "$PWD/install"
+      - name: Check Python entry points
+        run: python3 -m compileall -q python adapters tests

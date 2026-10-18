@@ -1,0 +1,7 @@
+# PDG 2025 standard-model review, section 10.3.1 (2026-04-15 PDF), fit input.
+# https://pdg.lbl.gov/2025/reviews/rpp2025-rev-standard-model.pdf
+# TIMELIKE ON-SHELL five-flavour Delta alpha_had, NOT an MSbar alpha.
+reference_scale 91.1876
+delta_had5_os 0.02760
+uncertainty 0.00010
+alpha_s_reference 0.1193

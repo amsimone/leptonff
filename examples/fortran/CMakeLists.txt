@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.16)
+project(leptonff_fortran_example LANGUAGES CXX Fortran)
+find_package(leptonff 0.25 CONFIG REQUIRED)
+add_executable(decay_fortran main.f90)
+target_link_libraries(decay_fortran PRIVATE leptonff::leptonff)

@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.16)
+project(leptonff_c_example LANGUAGES C CXX)
+find_package(leptonff 0.25 CONFIG REQUIRED)
+add_executable(decay_example main.c)
+target_link_libraries(decay_example PRIVATE leptonff::leptonff)

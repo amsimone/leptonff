@@ -1,0 +1,7 @@
+# SYNTHETIC pure-QED charge/colour/threshold validation, not an SM profile.
+# No low-energy hadronic contribution or QCD evolution of quark FFs implied.
+e         -1                 1 0.00051099895069 0
+mu        -1                 1 0.1056583755     0
+tau       -1                 1 1.77693          0
+test_up    0.666666666666666667 3 1.5            3.0
+test_down -0.333333333333333333 3 4.75           2.375
