@@ -6,6 +6,7 @@
 #include "leptonff/hadronic_input.hpp"
 #include "leptonff/production_decay.hpp"
 #include "leptonff/production_records.hpp"
+#include "leptonff/theory.hpp"
 #include <cstdlib>
 #include <cmath>
 #include <iostream>
@@ -34,6 +35,7 @@ struct Engine {
   WLabCuts wcuts;
   FiducialCuts zcuts;
   std::unique_ptr<DecayCalculator> calculator;
+  std::unique_ptr<MeasurementPlan> measurement;
   const LabFragmentation* ff=nullptr;
   const PhotonicLabDressing* dressing=nullptr;
   const CoupledLabDressing* coupled=nullptr;
@@ -81,10 +83,12 @@ struct Engine {
     const Real input_alpha=setting("LEPTONFF_ALPHA",1/137.035999084L);
     if(flavour=="hadronic-pointlike") {
       if(input_scheme!="on-shell")throw std::invalid_argument("HVP anchor requires on-shell input");
-    }else if(input_scheme=="on-shell") {
-      QEDFlavourScheme reference;reference.fermions={{"mu",-1,p.muon_mass,1,0}};
-      p.alpha_msbar_at_mu0=leptonic_alpha_msbar(input_alpha,p.mu_0,p.flavour_scheme?*p.flavour_scheme:reference);
-    }else if(input_scheme!="msbar")throw std::invalid_argument("Invalid alpha input scheme");
+    }else {
+      if(input_scheme!="on-shell" && input_scheme!="msbar")throw std::invalid_argument("Invalid alpha input scheme");
+      EvolutionTheory theory;theory.alpha=input_scheme=="on-shell"?AlphaInput::on_shell(input_alpha):AlphaInput::msbar(input_alpha,p.mu_0);
+      theory.muon_mass=p.muon_mass;theory.initial_scale=p.mu_0;theory.final_scale=p.mu_frag;theory.flavours=p.flavour_scheme;
+      theory.running=p.coupling;p=theory.parameters();
+    }
     mu_frag=p.mu_frag;
     const Real samples=setting("LEPTONFF_HARD_SAMPLES",0);
     if(samples!=std::floor(samples) || samples<0 || samples>4096)
@@ -121,6 +125,7 @@ struct Engine {
     config.dress_photonic_hard=setting("LEPTONFF_DRESS_HARD",0)==1;
     config.fraction_measure=fraction_cells?FractionMeasure::conservative_cells:FractionMeasure::atoms;
     calculator=std::make_unique<DecayCalculator>(config);
+    if(spectra)measurement=std::make_unique<MeasurementPlan>(process==31,LabSpectrum::reference(process==31,wcuts,zcuts));
     ff=&calculator->fragmentation();dressing=calculator->photonic();coupled=calculator->coupled();
     if(!photonic && setting("LEPTONFF_DRESS_HARD",0)!=0)
       throw std::invalid_argument("Hard dressing pilot requires the fixed-alpha photonic branch");
@@ -360,10 +365,10 @@ extern "C" int leptonff_mcfm_evaluate_all(int process,const double* p3,const dou
     std::fill(spectra,spectra+8*17,0);
     const auto& e=engine_for(process);if(!e.spectra)return 0;
     const bool neutral=process==31;
-    const auto definition=LabSpectrum::reference(neutral,e.wcuts,e.zcuts);
+    const auto& definition=e.measurement->spectrum();
     const auto a=vector(process==1?p4:p3),b=vector(process==1?p3:p4);
     const auto kind=neutral?SpinDecay::neutral_vector:process==1?SpinDecay::wplus:SpinDecay::wminus;
-    const auto predictions=e.calculator->cumulative({a,b,hard_seed(ref3,ref4)},definition.selections);
+    const auto predictions=e.calculator->cumulative({a,b,hard_seed(ref3,ref4)},*e.measurement);
     const auto n=definition.selections.size();
     std::vector<std::array<Real,8>> values(n);
 #ifdef LEPTONFF_WITH_PHOTOS

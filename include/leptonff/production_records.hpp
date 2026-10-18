@@ -56,17 +56,29 @@ private:
 struct IntegrationEstimate {
   std::vector<Real> mean;
   std::vector<std::vector<Real>> covariance;
+  std::vector<Real> variance;
+  // Sparse/block layouts omit the dense matrix. Pairs include the diagonal;
+  // absent entries are uncomputed, never implicitly zero covariance.
+  std::vector<std::pair<std::size_t,std::size_t>> covariance_pairs;
+  std::vector<Real> covariance_values;
+};
+enum class CovarianceMode { full,diagonal,blocks,selected };
+struct CovarianceRequest {
+  CovarianceMode mode=CovarianceMode::full;
+  std::size_t block_size=0;
+  std::vector<std::pair<std::size_t,std::size_t>> pairs;
 };
 // Sum counterevents before squaring. Host weights are already normalised
 // integration contributions; trials are NOT another divisor of their sum.
 class GroupedIntegration {
 public:
-  explicit GroupedIntegration(std::size_t channels);
+  explicit GroupedIntegration(std::size_t channels,const CovarianceRequest& = {});
   void add_group(const std::vector<Real>&);
   void end_block(const ProductionBlock&);
   IntegrationEstimate estimate() const;
 private:
   std::size_t n_;
+  CovarianceRequest request_;
   std::vector<Real> sum_,products_;
   std::uint64_t groups_=0;
   struct Part {std::size_t iterations=0;std::uint64_t trials=0;std::vector<Real> sum,covariance;};

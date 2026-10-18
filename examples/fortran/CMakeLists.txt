@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(leptonff_fortran_example LANGUAGES CXX Fortran)
-find_package(leptonff 0.26 CONFIG REQUIRED)
+find_package(leptonff 0.27 CONFIG REQUIRED)
 if(TARGET leptonff::fortran)
   set(fortran_interface leptonff::fortran)
 else()

@@ -4,6 +4,7 @@
 #include <cstring>
 #include <functional>
 #include <random>
+#include "parallel.hpp"
 #include <stdexcept>
 
 namespace leptonff {
@@ -77,7 +78,8 @@ FourVector map_massless_parent(const double* p,Real tolerance) {
 }
 struct DecayCalculator::Impl {
   DecayConfiguration config;
-  std::unique_ptr<LabFragmentation> ff;
+  std::unique_ptr<LabFragmentation> owned_ff;
+  const LabFragmentation* ff=nullptr;
   std::unique_ptr<PhotonicLabDressing> dressing;
   std::unique_ptr<CoupledLabDressing> coupled;
   explicit Impl(const DecayConfiguration& c):config(c) {
@@ -86,13 +88,15 @@ struct DecayCalculator::Impl {
     if(c.mode==DecayMode::photonic_ll || c.mode==DecayMode::photonic_nll) {
       QEDParameters q{p.alpha_msbar_at_mu0,p.muon_mass,p.mu_0,p.mu_frag};
       LLGrid grid;grid.bins=c.grid.bins;grid.log_span=c.grid.log_span;grid.soft_log_cutoff=grid.spacing()/2;
-      ff=std::make_unique<LabFragmentation>(LLNonSinglet(q.expansion_parameter()*2*std::log(q.mu_frag/q.mu_0),grid),q,c.minimum_z);
       if(c.dress_photonic_hard && c.hard_samples)
         dressing=std::make_unique<PhotonicLabDressing>(q,grid,c.minimum_z,c.mode==DecayMode::photonic_nll?PhotonicAccuracy::nll:PhotonicAccuracy::ll);
+      if(dressing)owned_ff=std::make_unique<LabFragmentation>(dressing->evolution().evolution(),q,c.minimum_z);
+      else owned_ff=std::make_unique<LabFragmentation>(LLNonSinglet(q.expansion_parameter()*2*std::log(q.mu_frag/q.mu_0),grid),q,c.minimum_z);
+      ff=owned_ff.get();
     }else if(c.mode==DecayMode::coupled_nll) {
       coupled=std::make_unique<CoupledLabDressing>(c.process,p,c.grid,c.minimum_z,c.fraction_measure);
-      ff=std::make_unique<LabFragmentation>(coupled->fragmentation());
-    }else ff=std::make_unique<LabFragmentation>(QEDXSpaceEvolution(p,c.grid),c.minimum_z,c.fraction_measure);
+      ff=&coupled->fragmentation();
+    }else {owned_ff=std::make_unique<LabFragmentation>(QEDXSpaceEvolution(p,c.grid),c.minimum_z,c.fraction_measure);ff=owned_ff.get();}
   }
   bool neutral() const {return config.process==SpinDecay::neutral_vector;}
   DecayPrediction prediction(const FourVector& a,const FourVector& b,const LabSelection& s,const std::array<Real,3>& g) const {
@@ -114,17 +118,38 @@ struct DecayCalculator::Impl {
     }
     const Real matched=f.matched+alpha*(h+g[0]);return {f.born,nlo,matched,alpha*alpha*f.coefficient2,matched-nlo};
   }
-  void geometry(const FourVector& parent,const std::vector<LabSelection>& selections,std::uint64_t seed,
+  void geometry(const FourVector& parent,const MeasurementPlan& plan,std::uint64_t seed,
                 const std::function<void(std::size_t,const CoupledGeometry&,Real)>& accept) const {
     if(!config.hard_samples || ff->a_initial()==0)return;
+    const auto& selections=plan.spectrum().selections;
     const Real M=mass(parent),pi=std::acos(-1.L);
+    const std::size_t slots=selections.size()*(coupled?8:1);
+    std::vector<std::array<Real,3>> cached(slots);
+    std::vector<bool> ready(slots,false);
+    std::array<Real,12> previous{};bool have_previous=false;
     std::vector<ParentMeasurements> measurements;
-    for(const auto& selection:selections)measurements.push_back([&,selection](const FourVector& a,const FourVector& b,const FourVector& photon) {
+    for(std::size_t index=0;index<selections.size();++index)measurements.push_back([&,index](const FourVector& a,const FourVector& b,const FourVector& photon) {
+      const std::array<Real,12> key{a.energy,a.px,a.py,a.pz,b.energy,b.px,b.py,b.pz,photon.energy,photon.px,photon.py,photon.pz};
+      if(!have_previous || key!=previous) {previous=key;have_previous=true;std::fill(ready.begin(),ready.end(),false);}
+      std::size_t group=plan.representatives()[index];
+      if(coupled) {
+        // Converted photons are tagged parents too. Only share measurements
+        // when all relevant directions have the SAME eta acceptance pattern.
+        const auto& s=selections[index];const Real cut=neutral()?s.z.eta_max:s.w.muon_eta_max;
+        const auto pass=[&](const FourVector& p){return p.pt()>0 && std::abs(p.eta())<cut;};
+        const unsigned mask=(pass(a)?1:0)|(neutral() && pass(b)?2:0)|(pass(photon)?4:0);
+        if(!mask)return std::array<Real,3>{};
+        group=8*group+mask;
+      }else if(!plan.accepts_eta(index,a,b))return std::array<Real,3>{};
+      if(ready[group])return cached[group];
+      const auto& selection=selections[coupled?index:group];
       const Real selected=selection.accepts(neutral(),a,b);
-      if(dressing)return std::array<Real,3>{selected,(neutral()?dressing->z_measurement(a,b,selection.z):dressing->w_measurement(a,b,selection.w))-selected,0};
-      if(!coupled)return std::array<Real,3>{selected,0,0};
-      return std::array<Real,3>{selected,neutral()?coupled->z_real(a,b,photon,selection.z):coupled->w_real(a,b,photon,selection.w),
+      auto& value=cached[group];ready[group]=true;
+      if(dressing)value={selected,(neutral()?dressing->z_measurement(a,b,selection.z):dressing->w_measurement(a,b,selection.w))-selected,0};
+      else if(!coupled)value={selected,0,0};
+      else value={selected,neutral()?coupled->z_real(a,b,photon,selection.z):coupled->w_real(a,b,photon,selection.w),
         neutral()?coupled->z_real(a,b,photon,selection.z,true):coupled->w_real(a,b,photon,selection.w,true)};
+      return value;
     });
     std::mt19937_64 rng(seed);const auto uniform=[&](){return Real((rng()>>11)+.5L)/9007199254740992.L;};
     const Real edge=std::acos(1-config.collinear_cutoff),theta_span=pi-2*edge;
@@ -149,30 +174,60 @@ const LabFragmentation& DecayCalculator::fragmentation() const {return *impl_->f
 const PhotonicLabDressing* DecayCalculator::photonic() const {return impl_->dressing.get();}
 const CoupledLabDressing* DecayCalculator::coupled() const {return impl_->coupled.get();}
 std::vector<DecayPrediction> DecayCalculator::cumulative(const BornDecayPoint& point,const std::vector<LabSelection>& selections) const {
+  LabSpectrum s;s.selections=selections;return cumulative(point,MeasurementPlan(impl_->neutral(),std::move(s)));
+}
+std::vector<DecayPrediction> DecayCalculator::cumulative(const BornDecayPoint& point,const MeasurementPlan& plan) const {
+  if(plan.neutral()!=impl_->neutral())throw std::invalid_argument("Measurement process does not match calculator");
   massless(point.first);massless(point.second);
-  if(selections.empty())throw std::invalid_argument("Empty decay selection list");
-  for(const auto& s:selections){s.w.validate();s.z.validate();}
-  const auto q=sum(point.first,point.second);mass(q);
+  const auto& selections=plan.spectrum().selections;
+  const auto q=sum(point.first,point.second);const Real M=mass(q);
   const auto rest=rest_frame_boost(point.first,q,-1);const Real norm=std::hypot(rest.pt(),rest.pz);
   const auto density=spin_angular_projector(impl_->config.process,{rest.px/norm,rest.py/norm,rest.pz/norm});
   std::vector<std::array<Real,3>> geometry(selections.size());
-  impl_->geometry(q,selections,point.radiation_seed,[&](std::size_t i,const CoupledGeometry& g,Real weight) {
+  impl_->geometry(q,plan,point.radiation_seed,[&](std::size_t i,const CoupledGeometry& g,Real weight) {
     for(int j=0;j<3;++j)geometry[i][j]+=weight*spin_contract(density,g[j]);
   });
-  std::vector<DecayPrediction> out;
-  for(std::size_t i=0;i<selections.size();++i)out.push_back(impl_->prediction(point.first,point.second,selections[i],geometry[i]));
+  std::vector<DecayPrediction> out(selections.size()),cached(selections.size());std::vector<bool> ready(selections.size(),false);
+  const Real a=impl_->ff->a_initial(),ah=impl_->coupled?impl_->coupled->a_hard(M):a;
+  const auto& p=impl_->config.evolution;
+  const Real beta=!impl_->coupled?0:p.flavour_scheme?run_flavour_coupling(p,M).beta0_integral:
+    p.coupling==QEDCouplingMode::fixed?0:4*std::log(M/p.mu_0)/3;
+  for(std::size_t i=0;i<selections.size();++i) {
+    const auto group=plan.representatives()[i];
+    if(plan.accepts_eta(i,point.first,point.second)) {
+      if(!ready[group]) {cached[group]=impl_->prediction(point.first,point.second,selections[group],{});ready[group]=true;}
+      out[i]=cached[group];
+    }
+    out[i].order1+=a*geometry[i][0];
+    out[i].matched+=impl_->coupled?ah*geometry[i][1]:a*(geometry[i][0]+(impl_->dressing?geometry[i][1]:0));
+    if(impl_->coupled)out[i].order2+=a*a*(geometry[i][2]+beta*geometry[i][0]);
+    out[i].higher=out[i].matched-out[i].order1;
+  }
   return out;
 }
 DecaySpectrumPrediction DecayCalculator::evaluate(const BornDecayPoint& point,const LabSpectrum& spectrum) const {
-  const auto values=cumulative(point,spectrum.selections);DecaySpectrumPrediction out;out.total=values.at(0);
-  for(const auto& b:spectrum.bins) {
+  return evaluate(point,MeasurementPlan(impl_->neutral(),spectrum));
+}
+DecaySpectrumPrediction DecayCalculator::evaluate(const BornDecayPoint& point,const MeasurementPlan& plan) const {
+  const auto values=cumulative(point,plan);DecaySpectrumPrediction out;out.total=values.at(0);
+  for(const auto& b:plan.spectrum().bins) {
     std::array<Real,5> bin{};
     for(int j=0;j<5;++j)bin[j]=(b.positive<0?0:values.at(b.positive).values()[j])-(b.negative<0?0:values.at(b.negative).values()[j]);
     out.bins.push_back(from(bin));
   }
   return out;
 }
+std::vector<DecaySpectrumPrediction> DecayCalculator::evaluate_batch(const std::vector<BornDecayPoint>& points,
+    const MeasurementPlan& plan,unsigned threads) const {
+  std::vector<DecaySpectrumPrediction> out(points.size());
+  detail::parallel_for(points.size(),threads,[&](std::size_t i){out[i]=evaluate(points[i],plan);});return out;
+}
 SpinDecayResponse DecayCalculator::response(const FourVector& q,const LabSpectrum& spectrum,std::uint64_t seed,const DecayAngularGrid& grid) const {
+  return response(q,MeasurementPlan(impl_->neutral(),spectrum),seed,grid);
+}
+SpinDecayResponse DecayCalculator::response(const FourVector& q,const MeasurementPlan& plan,std::uint64_t seed,const DecayAngularGrid& grid) const {
+  if(plan.neutral()!=impl_->neutral())throw std::invalid_argument("Measurement process does not match calculator");
+  const auto& spectrum=plan.spectrum();
   if(grid.cosine_nodes<2 || grid.cosine_nodes>512 || grid.azimuth_nodes<4 || grid.azimuth_nodes>2048)
     throw std::invalid_argument("Invalid decay angular quadrature");
   if(spectrum.selections.empty())throw std::invalid_argument("Empty response spectrum");
@@ -183,8 +238,14 @@ SpinDecayResponse DecayCalculator::response(const FourVector& q,const LabSpectru
     const FourVector a{M/2,M*n[0]/2,M*n[1]/2,M*n[2]/2},b{M/2,-a.px,-a.py,-a.pz};
     const auto first=rest_frame_boost(a,q,1),second=rest_frame_boost(b,q,1);
     const auto B=spin_born_tensor(impl_->config.process,n);
+    std::vector<DecayPrediction> cached(integrals.size());std::vector<bool> ready(integrals.size(),false);
     for(std::size_t i=0;i<integrals.size();++i) {
-      const auto p=impl_->prediction(first,second,spectrum.selections[i],{}).values();
+      const auto group=plan.representatives()[i];
+      std::array<Real,5> p{};
+      if(plan.accepts_eta(i,first,second)) {
+        if(!ready[group]) {cached[group]=impl_->prediction(first,second,spectrum.selections[group],{});ready[group]=true;}
+        p=cached[group].values();
+      }
       for(int j=0;j<5;++j)add(integrals[i][j],B,p[j]*w/(2*grid.azimuth_nodes));
     }
   }
@@ -192,7 +253,7 @@ SpinDecayResponse DecayCalculator::response(const FourVector& q,const LabSpectru
   const auto& p=impl_->config.evolution;
   const Real beta=!impl_->coupled?0:p.flavour_scheme?run_flavour_coupling(p,M).beta0_integral:
     p.coupling==QEDCouplingMode::fixed?0:4*std::log(M/p.mu_0)/3;
-  impl_->geometry(q,spectrum.selections,seed,[&](std::size_t i,const CoupledGeometry& g,Real weight) {
+  impl_->geometry(q,plan,seed,[&](std::size_t i,const CoupledGeometry& g,Real weight) {
     add(integrals[i][1],g[0],weight*a);
     if(impl_->coupled) {add(integrals[i][2],g[1],weight*ah);add(integrals[i][3],g[2],weight*a*a);add(integrals[i][3],g[0],weight*a*a*beta);}
     else {add(integrals[i][2],g[0],weight*a);if(impl_->dressing)add(integrals[i][2],g[1],weight*a);}

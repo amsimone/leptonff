@@ -119,40 +119,84 @@ bool ProductionReader::next_block(ProductionBlock& block,const std::function<voi
   }
   throw std::invalid_argument("Interrupted production archive: missing END");
 }
-GroupedIntegration::GroupedIntegration(std::size_t n):n_(n) {
-  if(!n || n>8192)throw std::invalid_argument("Invalid replay channel count");
-  sum_.resize(n);products_.resize(n*(n+1)/2);
+namespace {
+template<class F> void covariance_pairs(std::size_t n,const CovarianceRequest& r,const F& f) {
+  std::size_t k=0;
+  if(r.mode==CovarianceMode::selected) {for(auto p:r.pairs)f(p.first,p.second,k++);return;}
+  const auto size=r.mode==CovarianceMode::full?n:r.mode==CovarianceMode::diagonal?1:r.block_size;
+  for(std::size_t start=0;start<n;start+=size)
+    for(std::size_t j=start;j<std::min(n,start+size);++j)
+      for(std::size_t i=start;i<=j;++i)f(i,j,k++);
+}
+}
+GroupedIntegration::GroupedIntegration(std::size_t n,const CovarianceRequest& request):n_(n),request_(request) {
+  if(!n || n>1000000)throw std::invalid_argument("Invalid replay channel count");
+  if(request_.mode!=CovarianceMode::full && request_.mode!=CovarianceMode::diagonal &&
+     request_.mode!=CovarianceMode::blocks && request_.mode!=CovarianceMode::selected)throw std::invalid_argument("Invalid covariance mode");
+  if(request_.mode==CovarianceMode::blocks && (!request_.block_size || request_.block_size>n))throw std::invalid_argument("Invalid covariance block size");
+  if(request_.mode==CovarianceMode::full && n>8192)throw std::invalid_argument("Full covariance exceeds 8192 channels; choose blocks, selected pairs or diagonal");
+  if(request_.mode==CovarianceMode::selected) {
+    for(auto& p:request_.pairs) {if(p.first>=n || p.second>=n)throw std::invalid_argument("Invalid selected covariance channel");if(p.first>p.second)std::swap(p.first,p.second);}
+    for(std::size_t i=0;i<n;++i)request_.pairs.emplace_back(i,i);
+    std::sort(request_.pairs.begin(),request_.pairs.end());
+    request_.pairs.erase(std::unique(request_.pairs.begin(),request_.pairs.end()),request_.pairs.end());
+  }
+  std::size_t count=0;
+  if(request_.mode==CovarianceMode::selected)count=request_.pairs.size();
+  else {
+    const auto b=request_.mode==CovarianceMode::full?n:request_.mode==CovarianceMode::diagonal?1:request_.block_size;
+    count=(n/b)*(b*(b+1)/2)+(n%b)*((n%b)+1)/2;
+  }
+  if(count>100000000)throw std::invalid_argument("Requested covariance exceeds 100 million stored entries");
+  sum_.resize(n);products_.resize(count);
 }
 void GroupedIntegration::add_group(const std::vector<Real>& x) {
   if(x.size()!=n_)throw std::invalid_argument("Replay channel mismatch");
+  for(auto v:x)if(!std::isfinite(v))throw std::invalid_argument("Non-finite group response");
   ++groups_;
-  std::vector<std::size_t> active;
-  for(std::size_t i=0;i<n_;++i) {if(!std::isfinite(x[i]))throw std::invalid_argument("Non-finite group response");sum_[i]+=x[i];if(x[i]!=0)active.push_back(i);}
-  for(std::size_t j=0;j<active.size();++j)for(std::size_t i=0;i<=j;++i)products_[index(active[i],active[j])]+=x[active[i]]*x[active[j]];
+  for(std::size_t i=0;i<n_;++i)sum_[i]+=x[i];
+  if(request_.mode==CovarianceMode::selected) {
+    for(std::size_t k=0;k<request_.pairs.size();++k) {auto p=request_.pairs[k];products_[k]+=x[p.first]*x[p.second];}
+    return;
+  }
+  const auto b=request_.mode==CovarianceMode::full?n_:request_.mode==CovarianceMode::diagonal?1:request_.block_size;
+  std::vector<std::size_t> active;active.reserve(b);
+  for(std::size_t start=0;start<n_;start+=b) {
+    active.clear();
+    for(std::size_t i=start;i<std::min(n_,start+b);++i)if(x[i]!=0)active.push_back(i);
+    const auto offset=(start/b)*(b*(b+1)/2);
+    for(std::size_t j=0;j<active.size();++j)for(std::size_t i=0;i<=j;++i)
+      products_[offset+index(active[i]-start,active[j]-start)]+=x[active[i]]*x[active[j]];
+  }
 }
 void GroupedIntegration::end_block(const ProductionBlock& b) {
   if(b.trials<2 || b.stored_groups!=groups_ || groups_>b.trials || blocks_[{b.part,b.channel,b.iteration}])throw std::invalid_argument("Inconsistent/duplicate replay block");
   blocks_[{b.part,b.channel,b.iteration}]=true;
   auto& part=parts_[{b.part,b.channel}];
   if(!part.iterations) {part.sum.resize(n_);part.covariance.resize(products_.size());part.trials=b.trials;}
-  // Equal iteration weights remain defined when the host resumes with a new
-  // call count. Each block uses its OWN normalisation/zero-trial denominator.
   ++part.iterations;const Real calls=b.trials;
-  for(std::size_t j=0;j<n_;++j) {
-    part.sum[j]+=sum_[j];
-    for(std::size_t i=0;i<=j;++i)part.covariance[index(i,j)]+=(calls*products_[index(i,j)]-sum_[i]*sum_[j])/(calls-1);
-  }
+  for(std::size_t i=0;i<n_;++i)part.sum[i]+=sum_[i];
+  covariance_pairs(n_,request_,[&](std::size_t i,std::size_t j,std::size_t k){part.covariance[k]+=(calls*products_[k]-sum_[i]*sum_[j])/(calls-1);});
   std::fill(sum_.begin(),sum_.end(),0);std::fill(products_.begin(),products_.end(),0);groups_=0;
 }
 IntegrationEstimate GroupedIntegration::estimate() const {
   if(groups_ || parts_.empty())throw std::logic_error("Incomplete/empty replay accumulation");
-  IntegrationEstimate out;out.mean.resize(n_);out.covariance.resize(n_,std::vector<Real>(n_));
+  IntegrationEstimate out;out.mean.resize(n_);out.variance.resize(n_);
+  const bool full=request_.mode==CovarianceMode::full;
+  if(full)out.covariance.resize(n_,std::vector<Real>(n_));
+  else {
+    out.covariance_pairs.reserve(products_.size());out.covariance_values.resize(products_.size());
+    covariance_pairs(n_,request_,[&](std::size_t i,std::size_t j,std::size_t){out.covariance_pairs.emplace_back(i,j);});
+  }
   for(const auto& entry:parts_) {
     const auto& p=entry.second;const Real n=p.iterations;
-    for(std::size_t j=0;j<n_;++j) {
-      out.mean[j]+=p.sum[j]/n;
-      for(std::size_t i=0;i<=j;++i) {out.covariance[i][j]+=p.covariance[index(i,j)]/(n*n);if(i!=j)out.covariance[j][i]=out.covariance[i][j];}
-    }
+    for(std::size_t j=0;j<n_;++j)out.mean[j]+=p.sum[j]/n;
+    covariance_pairs(n_,request_,[&](std::size_t i,std::size_t j,std::size_t k){
+      const Real v=p.covariance[k]/(n*n);
+      if(i==j)out.variance[i]+=v;
+      if(full) {out.covariance[i][j]+=v;if(i!=j)out.covariance[j][i]=out.covariance[i][j];}
+      else out.covariance_values[k]+=v;
+    });
   }
   return out;
 }

@@ -32,11 +32,16 @@ const auto endpoint_bin = ff.integral(.9L, 1);
 const auto prediction = ff.convolve([](Real x) { return x*(1-x); }, .5L);
 ```
 
-Link `leptonff::core` after `find_package(leptonff 0.26 CONFIG REQUIRED COMPONENTS core)`.
+Link `leptonff::core` after `find_package(leptonff 0.27 CONFIG REQUIRED COMPONENTS core)`.
 Matched W/Z clients include `<leptonff/matched.hpp>` and link `leptonff::leptonff`.
 Complete examples cover [fragmentation](examples/fragmentation),
 [convolution](examples/convolution), [matched W/Z](examples/cpp),
 [C](examples/c_api), [Fortran](examples/fortran) and [Python](examples/python).
+
+For repeated studies, use compiled measurements, batch bindings, parallel
+replay and persisted responses at explicit production nodes. The
+[performance and reuse guide](docs/manual/performance.md) gives commands,
+covariance choices and examples.
 
 ## Scientific documentation and checks
 

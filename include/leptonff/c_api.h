@@ -34,6 +34,12 @@ typedef struct {
   int photonic_unitary_conditioning;
   double a_initial,source_number_moment,raw_inclusive_factor,wrap_bound,tail_bound;
 } leptonff_decay_diagnostics;
+typedef struct {
+  size_t struct_size;
+  unsigned abi_version;
+  int alpha_scheme,running; /* LEPTONFF_ALPHA_*, LEPTONFF_ALPHA_FIXED/ONE_LOOP/TWO_LOOP */
+  double alpha,alpha_reference_scale,initial_scale;
+} leptonff_decay_theory;
 /* All momenta below are (energy, px, py, pz), in GeV. first is the charged W
  * lepton or negative Z lepton; second is the neutrino or positive Z lepton.
  * Each subtraction group must share a radiation seed. Weights remain external.
@@ -42,6 +48,14 @@ typedef struct {
 void leptonff_decay_config_default(leptonff_decay_config*);
 int leptonff_decay_create(const leptonff_decay_config*,const leptonff_observable*,size_t,
                          leptonff_decay_context**);
+void leptonff_decay_theory_default(leptonff_decay_theory*);
+int leptonff_decay_create_with_theory(const leptonff_decay_config*,const leptonff_decay_theory*,
+    const leptonff_observable*,size_t,leptonff_decay_context**);
+/* New measurement view, sharing immutable physics with its source context.
+ * Physics fields of selection_config must equal the source configuration;
+ * only cuts and bin definitions may change. NULL keeps the source cuts. */
+int leptonff_decay_with_observables(const leptonff_decay_context*,const leptonff_decay_config* selection_config,
+    const leptonff_observable*,size_t,leptonff_decay_context**);
 void leptonff_decay_destroy(leptonff_decay_context*);
 /* Output index zero is the fiducial rate; following entries are physical bins. */
 size_t leptonff_decay_output_count(const leptonff_decay_context*);
@@ -51,6 +65,15 @@ int leptonff_decay_get_diagnostics(const leptonff_decay_context*,leptonff_decay_
 int leptonff_decay_evaluate(const leptonff_decay_context*,const double first[4],
                            const double second[4],uint64_t radiation_seed,
                            leptonff_prediction*,size_t capacity);
+/* Contiguous first/second arrays: count*4 doubles. Seeds: count uint64_t.
+ * Event-major output: count*output_count predictions. Weights stay external.
+ * Output is written only after every point succeeds. threads in [1,1024]. */
+int leptonff_decay_evaluate_batch(const leptonff_decay_context*,const double* first,const double* second,
+    const uint64_t* seeds,size_t count,unsigned threads,leptonff_prediction*,size_t capacity);
+/* Two-call string queries: capacity includes the trailing NUL. With output
+ * NULL, writes the required capacity. Labels are total / observable:lo:hi. */
+int leptonff_decay_configuration_json(const leptonff_decay_context*,char* output,size_t* capacity);
+int leptonff_decay_output_label(const leptonff_decay_context*,size_t index,char* output,size_t* capacity);
 /* Direct response tensors, row-major 3x3 complex entries as real/imag pairs.
  * Component order: born, order1, matched, order2, higher; 90 doubles/output.
  * Cartesian axes: rotation-free boost from LAB. Z is charge symmetric only.

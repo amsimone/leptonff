@@ -2,3 +2,5 @@
 // Supported entry point for matched W/Z calculations and production tensors.
 #include "leptonff/production_decay.hpp"
 #include "leptonff/drell_yan.hpp"
+#include "leptonff/decay_setup.hpp"
+#include "leptonff/response_table.hpp"

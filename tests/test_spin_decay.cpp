@@ -7,6 +7,18 @@
 int main() {
   using namespace leptonff;
   const Real M=80.385L,m=.1056583755L,pi=std::acos(-1.L);
+  // Independent adaptive quadrature tests the primitive, scale term, W-only
+  // contribution, and inclusive whole-plus endpoint on both branches.
+  for(auto kind:{SpinDecay::wminus,SpinDecay::neutral_vector})
+    for(Real lo:{1e-7L,.1L,.7L,.99L,.9999L})for(Real scale:{M/2,M,2*M})
+      for(Real hi:{lo+.3L*(1-lo),2.L}) {
+        const auto f=[&](Real z){return projected_decay_hard_kernel(kind,z,M,scale);};
+        const auto ref=hi>1?-integrate(f,0,lo,{1e-11L,1e-11L,8192}).value:
+                            integrate(f,lo,hi,{1e-11L,1e-11L,8192}).value;
+        close(projected_decay_hard_interval(kind,lo,hi,M,scale),ref,2e-9L,"analytic hard interval vs quadrature");
+      }
+  close(projected_decay_hard_interval(SpinDecay::wplus,0,2,M,M),0,0,"inclusive whole-plus integral");
+  throws<std::invalid_argument>([&]{projected_decay_hard_interval(SpinDecay::wplus,.2L,1,M,M);},"unsafe hard endpoint");
   const SpinTensor rho{{{{.6L,{.03L,.04L},{-.02L,.01L}}},
                        {{{.03L,-.04L},.3L,{.02L,-.03L}}},
                        {{{-.02L,-.01L},{.02L,.03L},.1L}}}};

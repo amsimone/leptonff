@@ -14,6 +14,17 @@ int main() {
     const auto spectrum=LabSpectrum::reference(neutral);
     const BornDecayPoint point{mu,other,12345};
     const auto p=decay.evaluate(point,spectrum);
+    const MeasurementPlan plan(neutral,spectrum);
+    const auto batch=decay.evaluate_batch({point,point,point},plan,2);
+    for(const auto& row:batch)for(int j=0;j<5;++j)close(row.total.values()[j],p.total.values()[j],0,"parallel native batch vs scalar");
+    // Compare every compiled eta group with an independently prepared one-cut
+    // action, retaining photon conversion when original directions fail eta.
+    const auto cumulative=decay.cumulative(point,spectrum.selections);
+    for(std::size_t k=0;k<spectrum.selections.size();++k) {
+      const auto single=decay.cumulative(point,{spectrum.selections[k]}).at(0);
+      for(int j=0;j<5;++j)close(single.values()[j],cumulative[k].values()[j],2e-12L,"compiled measurement vs independent selection");
+    }
+    throws<std::invalid_argument>([&]{decay.evaluate_batch({point,{{1,1,0,0},{1,1,0,0},42},point},plan,2);},"worker exception propagates after join");
     auto job1=std::async(std::launch::async,[&]{return decay.evaluate(point,spectrum);});
     auto job2=std::async(std::launch::async,[&]{return decay.evaluate(point,spectrum);});
     const auto repeated=job1.get();const auto simultaneous=job2.get();
@@ -73,6 +84,12 @@ int main() {
     const auto s=LabSpectrum::reference(kind==SpinDecay::neutral_vector);
     const auto value=coupled.response({100,0,0,0},s,18,{4,8});
     if(value.bins.size()!=17)throw std::runtime_error("Coupled tensor response failed");
+    const BornDecayPoint point{mu,other,137};
+    const auto all=coupled.cumulative(point,s.selections);
+    for(std::size_t i=0;i<s.selections.size();++i) {
+      const auto single=coupled.cumulative(point,{s.selections[i]}).at(0);
+      for(int j=0;j<5;++j)close(all[i].values()[j],single.values()[j],2e-12L,"coupled eta masks retain converted-parent measurements");
+    }
   }
   const double raw[4]={40,0,30,50};const auto p=map_massless_parent(raw);
   close(p.energy,50,0,"explicit host momentum convention");

@@ -17,6 +17,7 @@ tutorials
 interfaces
 validation
 architecture
+performance
 python
 ```
 
@@ -24,5 +25,6 @@ Start with [installation](installation.md) and the [three tutorials](tutorials.m
 Read the [scientific contract](physics.md) before selecting an accuracy label or
 combining a decay response with a production calculation.
 
-Version 0.26 retains the established numerical prescriptions. Its main changes
-are package structure, scientific interfaces and redistributable examples.
+Version 0.27 retains the established physical prescriptions while adding exact
+measurement stencils, parallel replay, covariance layouts, batch bindings and
+persisted responses at explicit production nodes.

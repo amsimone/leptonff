@@ -84,7 +84,50 @@ module leptonff
     integer(c_int) :: abi_version,photonic_unitary_conditioning
     real(c_double) :: a_initial,source_number_moment,raw_inclusive_factor,wrap_bound,tail_bound
   end type
+  type,bind(C) :: leptonff_decay_theory
+    integer(c_size_t) :: struct_size
+    integer(c_int) :: abi_version,alpha_scheme,running
+    real(c_double) :: alpha,alpha_reference_scale,initial_scale
+  end type
   interface
+    subroutine leptonff_decay_theory_default(t) bind(C)
+      import leptonff_decay_theory
+      type(leptonff_decay_theory),intent(out) :: t
+    end subroutine
+    integer(c_int) function leptonff_decay_create_with_theory(c,t,observables,count,context) bind(C)
+      import leptonff_decay_config,leptonff_decay_theory,c_ptr,c_size_t,c_int
+      type(leptonff_decay_config),intent(in) :: c
+      type(leptonff_decay_theory),intent(in) :: t
+      type(c_ptr),value :: observables
+      integer(c_size_t),value :: count
+      type(c_ptr),intent(out) :: context
+    end function
+    integer(c_int) function leptonff_decay_with_observables(source,c,observables,count,context) bind(C)
+      import c_ptr,c_size_t,c_int
+      type(c_ptr),value :: source,c,observables
+      integer(c_size_t),value :: count
+      type(c_ptr),intent(out) :: context
+    end function
+    integer(c_int) function leptonff_decay_evaluate_batch(context,first,second,seeds,count,threads,outputs,capacity) bind(C)
+      import c_ptr,c_double,c_int,c_int64_t,c_size_t,leptonff_prediction
+      type(c_ptr),value :: context
+      real(c_double),intent(in) :: first(4,*),second(4,*)
+      integer(c_int64_t),intent(in) :: seeds(*)
+      integer(c_size_t),value :: count,capacity
+      integer(c_int),value :: threads
+      type(leptonff_prediction),intent(out) :: outputs(*)
+    end function
+    integer(c_int) function leptonff_decay_configuration_json(context,output,capacity) bind(C)
+      import c_ptr,c_size_t,c_int
+      type(c_ptr),value :: context,output
+      integer(c_size_t),intent(inout) :: capacity
+    end function
+    integer(c_int) function leptonff_decay_output_label(context,index,output,capacity) bind(C)
+      import c_ptr,c_size_t,c_int
+      type(c_ptr),value :: context,output
+      integer(c_size_t),value :: index
+      integer(c_size_t),intent(inout) :: capacity
+    end function
     subroutine leptonff_decay_config_default(c) bind(C)
       import leptonff_decay_config
       type(leptonff_decay_config),intent(out) :: c

@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
-project(leptonff VERSION 0.26.0 LANGUAGES CXX)
+project(leptonff VERSION 0.27.0 LANGUAGES CXX)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(CheckCXXSourceCompiles)
 include(CTest)
+find_package(Threads REQUIRED)
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
 option(LEPTONFF_BUILD_MATCHED "Build matched W/Z calculations and production records" ON)
 option(LEPTONFF_BUILD_TOOLS "Build and install production replay" ON)
@@ -82,6 +83,8 @@ if(LEPTONFF_BUILD_MATCHED)
     src/photonic_dressing.cpp
     src/photonic_nll.cpp
     src/production_decay.cpp
+    src/decay_setup.cpp
+    src/response_table.cpp
     src/drell_yan.cpp
     src/c_api.cpp
     src/production_records.cpp
@@ -91,7 +94,11 @@ if(LEPTONFF_BUILD_MATCHED)
     src/ff_decay.cpp
   )
   leptonff_library_settings(leptonff)
-  set_target_properties(leptonff PROPERTIES VERSION ${PROJECT_VERSION} SOVERSION 0)
+  target_link_libraries(leptonff PUBLIC Threads::Threads)
+  # Before 1.0, matched C++ layouts may change between minor releases. Keep
+  # older binaries on their original library instead of silently mixing them.
+  set_target_properties(leptonff PROPERTIES VERSION ${PROJECT_VERSION}
+    SOVERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}")
   list(APPEND leptonff_install_targets leptonff)
 else()
   add_library(leptonff INTERFACE)
@@ -111,6 +118,7 @@ install(DIRECTORY examples/ DESTINATION ${CMAKE_INSTALL_DOCDIR}/examples
   FILES_MATCHING PATTERN "CMakeLists.txt" PATTERN "*.cpp" PATTERN "*.c" PATTERN "*.f90" PATTERN "*.py")
 install(DIRECTORY benchmarks/canonical DESTINATION ${CMAKE_INSTALL_DOCDIR}/benchmarks
   FILES_MATCHING PATTERN "*.json" PATTERN "*.md")
+install(FILES benchmarks/architecture_0_27.json DESTINATION ${CMAKE_INSTALL_DOCDIR}/benchmarks)
 install(FILES bindings/fortran/leptonff.f90 DESTINATION ${CMAKE_INSTALL_DATADIR}/leptonff/fortran)
 configure_package_config_file(cmake/leptonffConfig.cmake.in
   ${CMAKE_CURRENT_BINARY_DIR}/leptonffConfig.cmake
@@ -121,8 +129,10 @@ install(EXPORT leptonffTargets NAMESPACE leptonff:: DESTINATION ${CMAKE_INSTALL_
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/leptonffConfig.cmake
   ${CMAKE_CURRENT_BINARY_DIR}/leptonffConfigVersion.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/leptonff)
 set(LEPTONFF_PC_LIBRARY leptonff_core)
+set(LEPTONFF_PC_THREAD_LIBS "")
 if(LEPTONFF_BUILD_MATCHED)
   set(LEPTONFF_PC_LIBRARY leptonff)
+  set(LEPTONFF_PC_THREAD_LIBS "${CMAKE_THREAD_LIBS_INIT}")
 endif()
 file(RELATIVE_PATH LEPTONFF_PC_PREFIX_RELATIVE
   "${CMAKE_INSTALL_FULL_LIBDIR}/pkgconfig" "${CMAKE_INSTALL_PREFIX}")

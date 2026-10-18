@@ -5,7 +5,7 @@
 | Entry point | Objects and operations | Library target |
 |---|---|---|
 | `leptonff/core.hpp` | Distributions, fixed-order fragmentation, LL/coupled evolution, physical inputs | `leptonff::core` |
-| `leptonff/matched.hpp` | `DecayConfiguration`, `DecayCalculator`, spin tensors, Drell–Yan rotations | `leptonff::leptonff` |
+| `leptonff/matched.hpp` | Decay presets/calculators, compiled measurements, response tables, Drell–Yan rotations | `leptonff::leptonff` |
 | `leptonff/production_records.hpp` | Signed groups, archive I/O, replay covariance | `leptonff::leptonff` |
 
 The component headers included by these entry points remain available.
@@ -15,6 +15,12 @@ are advanced research interfaces and may change between minor releases.
 The C ABI has its own explicit version and layout checks. Record the runtime
 `leptonff::version()` (C: `leptonff_version()`, Python: `context.native_version`)
 alongside numerical and theory settings for reproducibility.
+
+Rebuild C++ clients when moving to 0.27: matched implementation layouts changed.
+The full shared library now uses a minor-version SONAME, matching the CMake
+package's minor-version compatibility boundary. Existing C structure layouts
+remain ABI-v1; newly linked clients use the new full-library SONAME. The core's
+shared-library ABI is unchanged.
 
 `EvolutionTheory` contains the alpha scheme/reference, masses, scales, running
 mode and optional flavours. `MomentEvolutionOptions` and `QEDXSpaceGrid`
@@ -45,8 +51,20 @@ values 1, 6 and 31 remain accepted.
 
 For compatibility, the ABI-v1 decay preset has one alpha field: fixed alpha in
 photonic modes and on-shell alpha in leptonic/HVP presets. The fragmentation
-configuration instead makes the scheme and reference scale explicit. Advanced
-matched MSbar inputs use C++ `DecayConfiguration::evolution` directly.
+configuration instead makes the scheme and reference scale explicit.
+`leptonff_decay_create_with_theory` adds explicit scheme, reference/initial scale
+and running order without changing the ABI-v1 preset layout. MSbar alpha must
+be provided at the initial scale. Photonic evolution requires fixed alpha and
+initial scale equal to the muon mass; the HVP anchor requires on-shell alpha.
+When explicit theory is supplied, its alpha overrides the preset alpha field.
+
+`leptonff_decay_with_observables` creates a view sharing the physics context;
+only cuts and binning may change. Either handle may outlive the other.
+`leptonff_decay_evaluate_batch` accepts contiguous `(count,4)` momentum arrays
+and one seed per point. Its output is event-major, then rate/bin; each entry
+contains the five existing prediction fields. Capacity counts predictions.
+Evaluation errors are joined and returned before writing the caller's output.
+String queries expose the resolved physics and ordered output labels.
 
 Fallible operations return zero on success and nonzero on failure; retrieve
 the thread-local message with `leptonff_last_error`. Exceptions never cross the
@@ -75,6 +93,9 @@ The module centralizes declarations previously copied into the example.
 Use `integer(c_size_t)` for counts and `real(c_double)` for ABI values.
 The installed example checks `c_sizeof(config)` against the native size before
 creating a context. No C++ `long double` layout is exposed through Fortran.
+Batch momenta use `first(4,count)` / `second(4,count)`, contiguous by point;
+seeds use `integer(c_int64_t)`. The module also declares explicit theory,
+measurement-view and string-query entry points.
 
 ## Python
 
@@ -85,6 +106,14 @@ the library become `ValueError`; using a closed handle raises `RuntimeError`.
 Python callback exceptions are caught before returning through C, then raised
 again in Python. The binding uses the same native numerical implementation.
 
+`Decay.with_observables` shares prepared physics with a new measurement.
+`evaluate_batch` returns ordinary spectra from one native call. Optional
+`evaluate_array` accepts NumPy arrays and returns float64 shape
+`(points, outputs, 5)`, with final axis `born,order1,matched,order2,higher`.
+`output_labels` names the second axis. `resolved_configuration()` records the
+actual inputs; `DecayTheory` supplies explicit coupling settings when needed.
+NumPy is optional (`pip install 'leptonff[arrays]'`).
+
 ## Migration from 0.25
 
 - Existing `leptonff::leptonff` and the self-contained full archive remain.
@@ -92,6 +121,6 @@ again in Python. The binding uses the same native numerical implementation.
   `leptonff/ff_decay.hpp`; include it explicitly in validation clients.
 - Reference executables retain names, and are built under `build/apps/` when
   enabled. Replay remains in the root build directory and installed `bin/`.
-- Standalone examples request CMake package version 0.26.
+- Standalone examples request CMake package version 0.27.
 - The historical low-level headers remain installed; the new manual defines
   the supported entry points and distinguishes advanced controls.

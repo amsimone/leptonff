@@ -33,7 +33,7 @@ This also disables replay and the decay reference programs.
 ## C++ clients
 
 ```cmake
-find_package(leptonff 0.26 CONFIG REQUIRED COMPONENTS core)
+find_package(leptonff 0.27 CONFIG REQUIRED COMPONENTS core)
 target_link_libraries(my_program PRIVATE leptonff::core)
 ```
 

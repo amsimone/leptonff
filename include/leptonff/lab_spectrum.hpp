@@ -31,4 +31,19 @@ struct LabSpectrum {
   static std::vector<ObservableBinning> read_binning(const std::string& filename);
   Real bin(std::size_t,const std::vector<Real>& cumulative) const;
 };
+
+// Immutable validated measurement, reusable with different physics contexts.
+// Selections differing only in pseudorapidity share the same fraction action.
+class MeasurementPlan {
+public:
+  MeasurementPlan(bool neutral,LabSpectrum);
+  bool neutral() const {return neutral_;}
+  const LabSpectrum& spectrum() const {return spectrum_;}
+  const std::vector<std::size_t>& representatives() const {return representatives_;}
+  bool accepts_eta(std::size_t,const FourVector&,const FourVector&) const;
+private:
+  bool neutral_;
+  LabSpectrum spectrum_;
+  std::vector<std::size_t> representatives_;
+};
 } // namespace leptonff

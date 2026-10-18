@@ -4,13 +4,16 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "leptonff"
-version = "0.26.0"
+version = "0.27.0"
 description = "Timelike QED fragmentation and matched bare-lepton W/Z radiation"
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md", "LICENSES/GPL-3.0-or-later.txt", "adapters/mcfm/LICENSE"]
 authors = [{name = "Simone Amoroso"}]
+
+[project.optional-dependencies]
+arrays = ["numpy>=1.23"]
 
 [project.urls]
 Repository = "https://github.com/amsimone/leptonff"

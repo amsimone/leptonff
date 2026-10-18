@@ -6,6 +6,6 @@ includedir=${prefix}/@CMAKE_INSTALL_INCLUDEDIR@
 Name: leptonff
 Description: Timelike QED fragmentation and matched bare-lepton W/Z radiation
 Version: @PROJECT_VERSION@
-Libs: -L${libdir} -l@LEPTONFF_PC_LIBRARY@
+Libs: -L${libdir} -l@LEPTONFF_PC_LIBRARY@ @LEPTONFF_PC_THREAD_LIBS@
 Libs.private: -lm
 Cflags: -I${includedir} -DLEPTONFF_REAL_MANTISSA=@LEPTONFF_REAL_MANTISSA@

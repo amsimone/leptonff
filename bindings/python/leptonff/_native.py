@@ -31,6 +31,12 @@ class Observable(C.Structure):
     _fields_ = [("observable", C.c_char_p), ("edges", C.POINTER(C.c_double)), ("edge_count", C.c_size_t)]
 
 
+class DecayTheory(C.Structure):
+    _fields_ = [("struct_size", C.c_size_t), ("abi_version", C.c_uint),
+                ("alpha_scheme", C.c_int), ("running", C.c_int)] + [
+        (name, C.c_double) for name in ("alpha", "alpha_reference_scale", "initial_scale")]
+
+
 class Prediction(C.Structure):
     _fields_ = [(name, C.c_double) for name in ("born", "order1", "matched", "order2", "higher")]
 
@@ -74,6 +80,12 @@ class Library:
             self._declare("leptonff_decay_evaluate", C.c_int, C.c_void_p, C.POINTER(C.c_double), C.POINTER(C.c_double), C.c_uint64, C.POINTER(Prediction), C.c_size_t)
             self._declare("leptonff_decay_get_diagnostics", C.c_int, C.c_void_p, C.POINTER(Diagnostics))
             self._declare("leptonff_decay_response", C.c_int, C.c_void_p, C.POINTER(C.c_double), C.c_uint64, C.c_uint, C.c_uint, C.POINTER(C.c_double), C.c_size_t)
+            self._declare("leptonff_decay_theory_default", None, C.POINTER(DecayTheory))
+            self._declare("leptonff_decay_create_with_theory", C.c_int, C.POINTER(DecayConfig), C.POINTER(DecayTheory), C.POINTER(Observable), C.c_size_t, C.POINTER(C.c_void_p))
+            self._declare("leptonff_decay_with_observables", C.c_int, C.c_void_p, C.POINTER(DecayConfig), C.POINTER(Observable), C.c_size_t, C.POINTER(C.c_void_p))
+            self._declare("leptonff_decay_evaluate_batch", C.c_int, C.c_void_p, C.POINTER(C.c_double), C.POINTER(C.c_double), C.POINTER(C.c_uint64), C.c_size_t, C.c_uint, C.POINTER(Prediction), C.c_size_t)
+            self._declare("leptonff_decay_configuration_json", C.c_int, C.c_void_p, C.c_void_p, C.POINTER(C.c_size_t))
+            self._declare("leptonff_decay_output_label", C.c_int, C.c_void_p, C.c_size_t, C.c_void_p, C.POINTER(C.c_size_t))
 
     def _declare(self, name, result, *args):
         function = getattr(self.lib, name)

@@ -56,7 +56,7 @@ Real transverse_mass(const FourVector& mu,const FourVector& nu) {
 }
 
 SignedFractionTable::SignedFractionTable(Real h,const std::vector<Real>& weights,Real minimum,FractionMeasure measure)
-    :minimum_z_(minimum),cell_fraction_(std::tanh(h/2)),measure_(measure) {
+    :minimum_z_(minimum),cell_fraction_(std::tanh(h/2)),spacing_(h),measure_(measure) {
   if(!std::isfinite(h) || h<=0 || weights.empty() || !std::isfinite(minimum) || minimum<=0 || minimum>=1)
     throw std::invalid_argument("Invalid signed fraction table");
   if(std::exp(-h*(weights.size()-1))>minimum)
@@ -151,6 +151,8 @@ Real SignedFractionTable::pair(const SignedFractionTable& second,Real l1,Real l2
   for(Real x:{l1,l2,lo,hi})if(!std::isfinite(x) || x<0)throw std::invalid_argument("Invalid fraction-pair bounds");
   if(l1>=1 || l2>=1 || hi<=lo || lo>=1)return 0;
   if(l1<minimum_z_ || l2<second.minimum_z_)throw std::invalid_argument("Pair measurement below table support");
+  if(!resolved_)return weights_[0]*second.interval(std::max(l2,lo),hi);
+  if(!second.resolved_)return second.weights_[0]*interval(std::max(l1,lo),hi);
   if(measure_==FractionMeasure::conservative_cells) {
     if(!resolved_)return weights_[0]*second.interval(std::max(l2,lo),hi);
     if(!second.resolved_)return second.weights_[0]*interval(std::max(l1,lo),hi);
@@ -168,6 +170,84 @@ Real SignedFractionTable::pair(const SignedFractionTable& second,Real l1,Real l2
     const Real a=std::max(l1,lower_[k]),b=upper_[k];
     out+=weights_[k]/(upper_[k]-lower_[k])*
       (second.integrated_tail(lo,a,b,l2)-second.integrated_tail(hi,a,b,l2));
+  }
+  return out;
+}
+
+FractionPairWorkspace::Query FractionPairWorkspace::query(const SignedFractionTable& t,Real q) {
+  if(q>=1)return {};
+  if(q<t.minimum_z_)throw std::invalid_argument("Measurement extends below FF table support");
+  Query out;out.zero=false;
+  const auto& nodes=t.measure_==FractionMeasure::atoms?t.z_:t.lower_;
+  out.index=std::lower_bound(nodes.begin(),nodes.end(),q,std::greater<Real>{})-nodes.begin();
+  if(t.measure_==FractionMeasure::conservative_cells && out.index<t.z_.size() && t.upper_[out.index]>q) {
+    const Real width=t.upper_[out.index]-t.lower_[out.index];
+    out.partial=(t.upper_[out.index]-q)/width;
+    out.inverse=std::log1p((t.upper_[out.index]-q)/q)/width;
+  }
+  return out;
+}
+std::array<Real,2> FractionPairWorkspace::value(const SignedFractionTable& t,const Query& q) {
+  if(q.zero)return {};
+  const Real weight=q.index<t.weights_.size()?t.weights_[q.index]:0;
+  return {t.prefix_[q.index]+q.partial*weight,t.inverse_prefix_[q.index]+q.inverse*weight};
+}
+FractionPairWorkspace::Interval FractionPairWorkspace::interval(const SignedFractionTable& t,Real lo,Real hi) {
+  Interval out;
+  if(lo>=1 || hi<=lo)return out;
+  if(lo<t.minimum_z_)throw std::invalid_argument("Measurement extends below FF table support");
+  if(t.measure_==FractionMeasure::atoms) {
+    out.atom=true;
+    out.begin=std::upper_bound(t.z_.begin(),t.z_.end(),hi,std::greater<Real>{})-t.z_.begin();
+    out.end=std::lower_bound(t.z_.begin(),t.z_.end(),lo,std::greater<Real>{})-t.z_.begin();
+    if(out.begin>out.end)out.begin=out.end;
+  }else {out.lower=query(t,lo);out.upper=query(t,hi);out.exclude_endpoint=hi==1;}
+  return out;
+}
+Real FractionPairWorkspace::value(const SignedFractionTable& t,const Interval& i) {
+  return i.atom?t.prefix_[i.end]-t.prefix_[i.begin]:
+    value(t,i.lower)[0]-value(t,i.upper)[0]-(i.exclude_endpoint?t.weights_[0]:0);
+}
+FractionPairWorkspace::Integral FractionPairWorkspace::integral(const SignedFractionTable& t,Real p,Real a,Real b,Real lo) {
+  Integral out;if(p>=b)return out;
+  out.zero=false;out.a=a;out.b=b;out.product=p;
+  out.lower=query(t,std::max(lo,p/b));out.upper=query(t,std::max(lo,p/a));return out;
+}
+Real FractionPairWorkspace::value(const SignedFractionTable& t,const Integral& i) {
+  if(i.zero)return 0;
+  const auto L=value(t,i.lower),U=value(t,i.upper);
+  return (i.b-i.a)*U[0]+i.b*(L[0]-U[0])-i.product*(L[1]-U[1]);
+}
+Real FractionPairWorkspace::apply(const SignedFractionTable& a,const SignedFractionTable& b,
+    Real l1,Real l2,Real lo,Real hi) {
+  for(Real x:{l1,l2,lo,hi})if(!std::isfinite(x) || x<0)throw std::invalid_argument("Invalid fraction-pair bounds");
+  if(l1>=1 || l2>=1 || hi<=lo || lo>=1)return 0;
+  if(l1<a.minimum_z_ || l2<b.minimum_z_)throw std::invalid_argument("Pair measurement below table support");
+  if(!a.resolved_)return a.weights_[0]*b.interval(std::max(l2,lo),hi);
+  if(!b.resolved_)return b.weights_[0]*a.interval(std::max(l1,lo),hi);
+  const Plan* found=nullptr;
+  for(const auto& p:plans_)if(p.h1==a.spacing_ && p.h2==b.spacing_ && p.min1==a.minimum_z_ && p.min2==b.minimum_z_
+      && p.n1==a.z_.size() && p.n2==b.z_.size() && p.m1==a.measure_ && p.m2==b.measure_
+      && p.l1==l1 && p.l2==l2 && p.lo==lo && p.hi==hi) {found=&p;break;}
+  if(!found) {
+    Plan p{a.spacing_,b.spacing_,a.minimum_z_,b.minimum_z_,l1,l2,lo,hi,a.z_.size(),b.z_.size(),a.measure_,b.measure_,{}};
+    if(a.measure_==FractionMeasure::atoms) {
+      for(std::size_t k=0;k<a.z_.size() && a.z_[k]>l1;++k)
+        p.rows.push_back({k,interval(b,std::max(l2,lo/a.z_[k]),hi/a.z_[k]),{},{},0});
+    }else {
+      p.rows.push_back({0,interval(b,std::max(l2,lo),hi),{},{},0});
+      const Real lower=std::max(l1,lo);
+      for(std::size_t k=1;k<a.z_.size() && a.upper_[k]>lower;++k) {
+        const Real x=std::max(lower,a.lower_[k]),y=a.upper_[k];
+        p.rows.push_back({k,{},integral(b,lo,x,y,l2),integral(b,hi,x,y,l2),1/(a.upper_[k]-a.lower_[k])});
+      }
+    }
+    plans_.push_back(std::move(p));found=&plans_.back();
+  }
+  Real out=0;
+  for(const auto& row:found->rows)if(a.weights_[row.index]!=0) {
+    const Real action=row.density==0?value(b,row.interval):row.density*(value(b,row.lower)-value(b,row.upper));
+    out+=a.weights_[row.index]*action;
   }
   return out;
 }
@@ -263,8 +343,9 @@ LabFFResult LabFragmentation::z(const FourVector& first,const FourVector& second
   if(mass==0)return finish(r);
   const Real ml=std::pow(cuts.mass_min/mass,2),mu=std::pow(cuts.mass_max/mass,2);
   r.born=(ml<1 && mu>1)?1:0;
+  FractionPairWorkspace workspace;
   const auto tensor=[&](const SignedFractionTable& a,const SignedFractionTable& b) {
-    return a.pair(b,l1,l2,ml,mu);
+    return workspace.apply(a,b,l1,l2,ml,mu);
   };
   r.resummed=tensor(same_,same_)+tensor(opposite_,opposite_);
   if(boundary_)r.resummed+=a_*(tensor(*boundary_,same_)+tensor(same_,*boundary_));

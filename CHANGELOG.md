@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.27.0
+
+- Replace event-loop hard-kernel quadrature with a shared analytic primitive.
+- Reuse exact signed fraction-pair cut stencils and compiled eta measurements.
+- Add deterministic batch/parallel evaluation and bounded grouped replay.
+- Add block, selected-pair and diagonal covariance, preserving full mode by default.
+- Share prepared physics across C/Python measurement views; expose resolved
+  settings, output labels and explicit matched alpha inputs.
+- Add C/Fortran/Python batch interfaces and optional NumPy arrays.
+- Persist exact-node spin responses with complete configuration identities,
+  round-trip precision, truncation checks and a corruption checksum.
+- Keep physical matching prescriptions and legacy C structure layouts intact.
+  C++ clients should rebuild for the new minor version. The full shared library
+  now uses a minor-version SONAME; the standalone core retains its existing ABI.
+
 ## 0.26.0
 
 - Standalone fragmentation/evolution target `leptonff::core`; the full

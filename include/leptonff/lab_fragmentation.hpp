@@ -6,6 +6,7 @@
 
 namespace leptonff {
 class PhotonicNLL;
+class FractionPairWorkspace;
 struct WLabCuts {
   Real muon_pt_min = 25, muon_eta_max = 2.4L;
   Real neutrino_pt_min = 0, transverse_mass_min = 0;
@@ -44,13 +45,42 @@ public:
   const std::vector<Real>& weights() const { return weights_; }
   Real minimum_z() const { return minimum_z_; }
 private:
-  Real minimum_z_,cell_fraction_;
+  friend class FractionPairWorkspace;
+  Real minimum_z_,cell_fraction_,spacing_;
   FractionMeasure measure_;
   bool resolved_ = false;
   std::vector<Real> z_,weights_,prefix_,inverse_prefix_,upper_,lower_;
   Real tail(Real lower,bool inverse) const;
   std::array<Real,2> tails(Real lower) const;
   Real integrated_tail(Real product,Real first_lower,Real first_upper,Real second_lower) const;
+};
+
+// Per-evaluation scratch storage. Reuses exact cut/search stencils across
+// signed table channels on compatible grids. No physics tables or global
+// mutable cache; use a separate workspace on each concurrent worker.
+class FractionPairWorkspace {
+public:
+  Real apply(const SignedFractionTable&,const SignedFractionTable&,
+             Real lower1,Real lower2,Real product_min,Real product_max);
+  void clear() { plans_.clear(); }
+private:
+  struct Query {std::size_t index=0;Real partial=0,inverse=0;bool zero=true;};
+  struct Interval {Query lower,upper;std::size_t begin=0,end=0;bool atom=false,exclude_endpoint=false;};
+  struct Integral {Query lower,upper;Real a=0,b=0,product=0;bool zero=true;};
+  struct Row {std::size_t index;Interval interval;Integral lower,upper;Real density=0;};
+  struct Plan {
+    Real h1,h2,min1,min2,l1,l2,lo,hi;
+    std::size_t n1,n2;
+    FractionMeasure m1,m2;
+    std::vector<Row> rows;
+  };
+  std::vector<Plan> plans_;
+  static Query query(const SignedFractionTable&,Real);
+  static std::array<Real,2> value(const SignedFractionTable&,const Query&);
+  static Interval interval(const SignedFractionTable&,Real,Real);
+  static Real value(const SignedFractionTable&,const Interval&);
+  static Integral integral(const SignedFractionTable&,Real,Real,Real,Real);
+  static Real value(const SignedFractionTable&,const Integral&);
 };
 
 // Born-parent FF convolution only: preserves host spin/recoil through its input

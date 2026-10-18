@@ -18,19 +18,54 @@ The source implementation of the special functions is independent of decay.
 The x-space FF-to-decay validation helper resides in the matched layer. Its
 header explicitly includes both evolution and decay geometry.
 
-## Reuse and future tables
+## Prepared physics and compiled measurements
 
-Current evolution and decay objects can be constructed once and reused in
-memory. A portable future table must identify its schema, software version,
-physical settings, basis, normalization, valid kinematic domain, numerical
-controls and interpolation error. Evolution tables and fiducial decay-response
-tables are different objects: the latter also depend on process, cuts, bins,
-spin basis and supported variations.
+`DecayCalculator` owns immutable physics. `MeasurementPlan` validates cuts and
+bin definitions once and can be reused with compatible calculators. Its eta
+selections share fraction actions. Converted-photon measurements share only
+when the eta acceptance of every relevant parent direction agrees.
 
-Portable table serialization and response interpolation are not implemented
-in this version. Their acceptance criterion is agreement with the direct
-calculation under independent grid/kinematic refinement, together with a measured
-benefit in repeated evaluation time.
+`FractionPairWorkspace` prepares exact atomic/cell cut stencils once per set of
+bounds and grid. Several signed table channels reuse their searches, logarithms
+and partial-cell factors. Scratch state is local to each evaluation; immutable
+physics and measurements remain safe to share between workers.
+
+The projected hard coefficient uses an analytic primitive shared with the
+hard-table projection. Endpoint distributions, perturbative truncation and
+the physical matching formula are unchanged.
+
+## Exact-node response tables
+
+`DecayResponseTable` builds responses concurrently at explicit parent momenta
+and radiation seeds. It saves and reloads all five tensor coefficients per
+rate/bin. Loading checks a complete configuration identity: software version,
+numeric precision, evolution inputs, thresholds, grids, cutoffs, sampling,
+cuts, bins, angular nodes and Cartesian frame convention. A footer and checksum
+detect interrupted writes and accidental corruption. The checksum is not an
+authenticity signature. Existing output files are not overwritten.
+
+The table introduces no interpolation. Its indexed nodes may be contracted
+with new compatible production tensors and PDF/scale weights. Callers must use
+the stored parent momentum and frame, and separately establish angular and
+hard-sampling convergence. Quadrature nodes must not be passed to the Monte
+Carlo group estimator to manufacture statistical errors.
+
+Response interpolation with measured errors and general evolution-table
+serialization remain future work. Exact-node persistence provides the reusable
+foundation without assigning an unverified interpolation accuracy.
+
+## Replay and statistics
+
+Replay batches complete signed groups and evaluates them on independent workers.
+Results enter the estimator in archive order, preserving the arithmetic order
+across worker counts and batch sizes. Every host block retains its own trial
+denominator. Production weights reuse each computed model response.
+
+The default full covariance is unchanged. Per-weight blocks retain all requested
+bins/components/models within each production weight; diagonal mode retains
+only variances. The C++ estimator additionally supports selected channel pairs.
+Absent covariance entries are uncomputed, not zero. Details and commands are in
+[the performance guide](performance.md).
 
 ## Generator integration
 

@@ -43,6 +43,7 @@ int main() {
   for(auto ma:{FractionMeasure::atoms,FractionMeasure::conservative_cells})
   for(auto mb:{FractionMeasure::atoms,FractionMeasure::conservative_cells}) {
     const SignedFractionTable a(h,w,minimum,ma),b(h,v,minimum,mb);
+    FractionPairWorkspace workspace;
     const auto interval=[&](const SignedFractionTable& table,std::size_t i,Real lo,Real hi) {
       if(table.measure()==FractionMeasure::atoms || i==0)return lo<table.fractions()[i] && table.fractions()[i]<hi?1.L:0.L;
       return std::max(0.L,std::min(hi,table.cell_upper(i))-std::max(lo,table.cell_lower(i)))/(table.cell_upper(i)-table.cell_lower(i));
@@ -70,6 +71,8 @@ int main() {
         }
       }
       close(a.pair(b,l1,l2,lo,hi),literal,3e-11L,"exact cell pair vs independent rectangle integration");
+      close(workspace.apply(a,b,l1,l2,lo,hi),literal,3e-11L,"prepared pair stencil vs independent rectangle integration");
+      close(workspace.apply(b,a,l2,l1,lo,hi),literal,3e-11L,"stencil reuse with signed channels and swapped bounds");
       close(a.pair(b,l1,l2,lo,hi),b.pair(a,l2,l1,lo,hi),3e-11L,"signed pair symmetry, both atom/cell orientations");
     }
   }

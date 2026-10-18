@@ -7,6 +7,29 @@
 
 int main() {
   using namespace leptonff;
+  // Every requested covariance must agree with the full estimator, including
+  // signed groups, zero trials, changing call counts and distinct iterations.
+  GroupedIntegration full(4);
+  CovarianceRequest diagonal;diagonal.mode=CovarianceMode::diagonal;
+  CovarianceRequest blocks;blocks.mode=CovarianceMode::blocks;blocks.block_size=2;
+  CovarianceRequest selected;selected.mode=CovarianceMode::selected;selected.pairs={{3,0},{0,3}};
+  std::vector<GroupedIntegration> layouts;
+  layouts.emplace_back(4,diagonal);layouts.emplace_back(4,blocks);layouts.emplace_back(4,selected);
+  for(int iteration=1;iteration<=2;++iteration) {
+    for(const auto& x:std::vector<std::vector<Real>>{{1,-2,0,3},{-.4L,.8L,1,-.7L}}) {
+      full.add_group(x);for(auto& layout:layouts)layout.add_group(x);
+    }
+    const ProductionBlock b{1,1,iteration,std::uint64_t(4*iteration),2};
+    full.end_block(b);for(auto& layout:layouts)layout.end_block(b);
+  }
+  const auto dense=full.estimate();
+  for(const auto& layout:layouts) {
+    const auto e=layout.estimate();if(!e.covariance.empty())throw std::runtime_error("Sparse covariance allocated a dense matrix");
+    for(std::size_t i=0;i<4;++i) {close(e.mean[i],dense.mean[i],0,"layout-independent mean");close(e.variance[i],dense.covariance[i][i],0,"layout-independent variance");}
+    for(std::size_t k=0;k<e.covariance_pairs.size();++k) {auto p=e.covariance_pairs[k];close(e.covariance_values[k],dense.covariance[p.first][p.second],0,"selected/block covariance equals full covariance");}
+  }
+  GroupedIntegration large(12000,diagonal);
+  throws<std::invalid_argument>([]{GroupedIntegration excessive(12000);},"full covariance memory guard");
   const auto path=std::filesystem::temp_directory_path()/("leptonff-records-"+std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
   std::filesystem::create_directory(path);
   try {

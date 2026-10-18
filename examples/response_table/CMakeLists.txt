@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.16)
+project(leptonff_response_consumer LANGUAGES CXX)
+find_package(leptonff 0.27 CONFIG REQUIRED COMPONENTS matched)
+add_executable(response_example main.cpp)
+target_link_libraries(response_example PRIVATE leptonff::leptonff)

@@ -8,9 +8,12 @@ program decay_example
   type(c_ptr) :: ff_context
   real(c_double) :: moment
   type(leptonff_prediction),allocatable :: outputs(:)
+  type(leptonff_prediction),allocatable :: batch(:)
   integer(c_size_t) :: count
   integer(c_int) :: status
   real(c_double) :: mu(4),nu(4)
+  real(c_double) :: first(4,2),second(4,2)
+  integer(c_int64_t) :: seeds(2)
   call leptonff_decay_config_default(config)
   config%process=LEPTONFF_PROCESS_W_PLUS
   config%grid_bins=128;config%hard_samples=4
@@ -27,6 +30,12 @@ program decay_example
   status=leptonff_decay_evaluate(context,mu,nu,42_c_int64_t,outputs,count)
   if(status/=0)error stop 'Decay evaluation failed'
   print *, 'Born acceptance, matched response, bins:',outputs(1)%born,outputs(1)%matched,count-1
+  first(:,1)=mu;first(:,2)=mu;second(:,1)=nu;second(:,2)=nu;seeds=42_c_int64_t
+  allocate(batch(2*count))
+  status=leptonff_decay_evaluate_batch(context,first,second,seeds,2_c_size_t,2_c_int,batch,2*count)
+  if(status/=0)error stop 'Batch evaluation failed'
+  if(batch(1)%matched/=outputs(1)%matched .or. batch(count+1)%matched/=outputs(1)%matched) &
+    error stop 'Batch/scalar result mismatch'
   call leptonff_decay_destroy(context)
   call leptonff_fragmentation_config_default(ff_config)
   if(ff_config%struct_size/=c_sizeof(ff_config))error stop 'Fragmentation ABI layout mismatch'

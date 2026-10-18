@@ -59,10 +59,16 @@ public:
   const CoupledLabDressing* coupled() const;
   std::vector<DecayPrediction> cumulative(const BornDecayPoint&,
                                          const std::vector<LabSelection>&) const;
+  std::vector<DecayPrediction> cumulative(const BornDecayPoint&,const MeasurementPlan&) const;
   DecaySpectrumPrediction evaluate(const BornDecayPoint&,const LabSpectrum&) const;
+  DecaySpectrumPrediction evaluate(const BornDecayPoint&,const MeasurementPlan&) const;
+  std::vector<DecaySpectrumPrediction> evaluate_batch(const std::vector<BornDecayPoint>&,
+      const MeasurementPlan&,unsigned threads=1) const;
   // Direct production-tensor route. Angular quadrature errors and finite
   // geometry sampling are separate controls; refine both for precision.
   SpinDecayResponse response(const FourVector& parent,const LabSpectrum&,
+                            std::uint64_t seed,const DecayAngularGrid& = {}) const;
+  SpinDecayResponse response(const FourVector& parent,const MeasurementPlan&,
                             std::uint64_t seed,const DecayAngularGrid& = {}) const;
 private:
   struct Impl;

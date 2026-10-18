@@ -1,5 +1,6 @@
 #include "leptonff/production_records.hpp"
-#include "leptonff/hadronic_input.hpp"
+#include "leptonff/decay_setup.hpp"
+#include "../src/parallel.hpp"
 #include <filesystem>
 #include <cmath>
 #include <iomanip>
@@ -20,20 +21,8 @@ std::string quoted(const std::string& value) {
   return out.str()+'"';
 }
 DecayConfiguration configuration(SpinDecay kind,const std::string& model,Real alpha,std::size_t bins,unsigned hard,Real scale,Real soft,Real collinear) {
-  DecayConfiguration c;c.process=kind;c.grid.bins=bins;c.hard_samples=hard;
-  c.evolution.mu_frag=scale;c.evolution.alpha_msbar_at_mu0=alpha;
-  c.soft_cutoff=soft;c.collinear_cutoff=collinear;
-  if(model=="born")c.evolution.alpha_msbar_at_mu0=0;
-  else if(model=="photonic_ll")c.mode=DecayMode::photonic_ll;
-  else if(model=="photonic_nll")c.mode=DecayMode::photonic_nll;
-  else if(model=="leptonic_nll") {
-    c.mode=DecayMode::coupled_nll;c.evolution.flavour_scheme=QEDFlavourScheme::leptons();
-    c.evolution.alpha_msbar_at_mu0=leptonic_alpha_msbar(alpha,c.evolution.mu_0,*c.evolution.flavour_scheme);
-    c.fraction_measure=FractionMeasure::conservative_cells;
-  }else if(model=="qed_hvp") {
-    c.mode=DecayMode::coupled_nll;configure_hadronic_pointlike(c.evolution,HadronicAlphaInput{},alpha,2);
-    c.evolution.qcd->alpha_s_reference=0;c.grid.log_span=64;c.fraction_measure=FractionMeasure::conservative_cells;
-  }else throw std::invalid_argument("Unknown model: "+model);
+  auto c=make_decay_configuration(kind,decay_preset(model),AlphaInput::on_shell(alpha),.1056583755L,scale);
+  c.grid.bins=bins;c.hard_samples=hard;c.soft_cutoff=soft;c.collinear_cutoff=collinear;
   return c;
 }
 }
@@ -41,17 +30,20 @@ int main(int argc,char** argv) {
   try {
     using namespace leptonff;
     if(argc==2 && std::string(argv[1])=="--help") {
-      std::cout<<"Usage: leptonff_replay production.lff --output report.json [--model born|photonic_ll|photonic_nll|leptonic_nll|qed_hvp] [--subdivide 4|--binning edges.conf] [--grid-bins N] [--hard-samples N]\n"
+      std::cout<<"Usage: leptonff_replay production.lff --output report.json [--model born|photonic_ll|photonic_nll|leptonic_nll|qed_hvp] [--subdivide 4|--binning edges.conf] [--grid-bins N] [--hard-samples N] [--threads N] [--batch-groups N] [--covariance full|per-weight|diagonal]\n"
         <<"Repeat --model for paired predictions and full cross-model covariance. Use leptonff-replay manifest.json for checksum-verified replay.\n";return 0;
     }
-    if(argc<2)throw std::invalid_argument("Usage: leptonff_replay production.lff --output report.json [--model born|photonic_ll|photonic_nll|leptonic_nll|qed_hvp] [--subdivide 4|--binning edges.conf] [--grid-bins N] [--hard-samples N]");
+    if(argc<2)throw std::invalid_argument("Usage: leptonff_replay production.lff --output report.json [--model born|photonic_ll|photonic_nll|leptonic_nll|qed_hvp] [--subdivide 4|--binning edges.conf] [--grid-bins N] [--hard-samples N] [--threads N] [--batch-groups N] [--covariance full|per-weight|diagonal]");
     std::string input=argv[1],output,binning;std::vector<std::string> models;
-    std::size_t grid=4096;unsigned hard=16,subdivide=1;
+    std::size_t grid=4096,batch_groups=128;unsigned hard=16,subdivide=1,threads=1;std::string covariance="full";
     Real alpha=1/137.035999084L,scale=0,soft=1e-5L,collinear=1e-5L;
     WLabCuts w;FiducialCuts z;
     for(int i=2;i<argc;++i) {
       const std::string key=argv[i];if(i+1>=argc)throw std::invalid_argument("Missing option value: "+key);const std::string value=argv[++i];
       if(key=="--output")output=value;else if(key=="--model")models.push_back(value);else if(key=="--binning")binning=value;
+      else if(key=="--threads") {const auto n=std::stoul(value);if(!n || n>1024)throw std::invalid_argument("Invalid worker count");threads=unsigned(n);}
+      else if(key=="--batch-groups")batch_groups=std::stoull(value);
+      else if(key=="--covariance")covariance=value;
       else if(key=="--subdivide")subdivide=std::stoul(value);else if(key=="--grid-bins")grid=std::stoull(value);
       else if(key=="--hard-samples")hard=std::stoul(value);else if(key=="--alpha")alpha=std::stold(value);
       else if(key=="--mu-frag")scale=std::stold(value);else if(key=="--soft-cutoff")soft=std::stold(value);
@@ -71,26 +63,40 @@ int main(int argc,char** argv) {
     std::vector<DecayCalculator> calculators;
     for(const auto& model:models)calculators.emplace_back(configuration(meta.process,model,alpha,grid,hard,scale,soft,collinear));
     const std::size_t channels=meta.weight_names.size()*models.size()*(1+spectrum.bins.size())*5;
-    GroupedIntegration integral(channels);ProductionBlock block;std::size_t groups=0,terms=0,blocks=0;
+    CovarianceRequest request;
+    if(covariance=="diagonal")request.mode=CovarianceMode::diagonal;
+    else if(covariance=="per-weight") {request.mode=CovarianceMode::blocks;request.block_size=models.size()*(1+spectrum.bins.size())*5;}
+    else if(covariance!="full")throw std::invalid_argument("Covariance must be full, per-weight or diagonal");
+    if(!batch_groups || batch_groups>100000)throw std::invalid_argument("Invalid replay batch size");
+    batch_groups=std::min(batch_groups,std::max(std::size_t{1},(64*1024*1024)/(channels*sizeof(Real))));
+    const MeasurementPlan measurement(neutral,spectrum);
+    GroupedIntegration integral(channels,request);ProductionBlock block;std::size_t groups=0,terms=0,blocks=0;
     std::vector<ProductionBlock> block_metadata;
-    while(reader.next_block(block,[&](const ProductionGroup& group) {
-      std::vector<Real> values(channels);++groups;
-      for(const auto& t:group.terms) {
-        ++terms;
-        for(std::size_t model=0;model<models.size();++model) {
-          const auto result=calculators[model].evaluate(t.point,spectrum);
+    std::vector<ProductionGroup> pending;pending.reserve(batch_groups);
+    const auto flush=[&]{
+      std::vector<std::vector<Real>> values(pending.size(),std::vector<Real>(channels));
+      detail::parallel_for(pending.size(),threads,[&](std::size_t i){
+        for(const auto& t:pending[i].terms)for(std::size_t model=0;model<models.size();++model) {
+          const auto result=calculators[model].evaluate(t.point,measurement);
           for(std::size_t weight=0;weight<meta.weight_names.size();++weight)for(std::size_t bin=0;bin<=spectrum.bins.size();++bin) {
             const auto p=bin?result.bins[bin-1].values():result.total.values();
             const auto offset=(((weight*models.size()+model)*(1+spectrum.bins.size()))+bin)*5;
-            for(int j=0;j<5;++j)values[offset+j]+=t.weights[weight]*p[j];
+            for(int j=0;j<5;++j)values[i][offset+j]+=t.weights[weight]*p[j];
           }
         }
-      }
-      integral.add_group(values);
-    })) {integral.end_block(block);block_metadata.push_back(block);++blocks;}
+      });
+      // Stable input order, independent of worker scheduling. Complete signed
+      // groups are reduced before products; no splitting across host blocks.
+      for(const auto& group:values)integral.add_group(group);
+      pending.clear();
+    };
+    while(reader.next_block(block,[&](const ProductionGroup& group) {
+      ++groups;terms+=group.terms.size();pending.push_back(group);
+      if(pending.size()==batch_groups)flush();
+    })) {flush();integral.end_block(block);block_metadata.push_back(block);++blocks;}
     const auto result=integral.estimate();const Real factor=meta.units=="fb"?1e-3L:1;
     std::ofstream out(output);if(!out)throw std::runtime_error("Cannot create replay output");out<<std::setprecision(18);
-    out<<"{\n\"schema\":1,\"scope\":\"grouped pre-FSR replay; integration covariance, no theory uncertainty claim\",\n\"process\":"
+    out<<"{\n\"schema\":"<<(covariance=="full"?1:2)<<",\"scope\":\"grouped pre-FSR replay; integration covariance, no theory uncertainty claim\",\n\"process\":"
       <<quoted(neutral?"z":meta.process==SpinDecay::wplus?"wplus":"wminus")<<",\"input\":"<<quoted(input)
       <<",\"producer\":"<<quoted(meta.producer)<<",\"physics_id\":"<<quoted(meta.physics_id)<<",\"run_id\":"<<quoted(meta.run_id)
       <<",\"random_seed\":"<<meta.random_seed<<",\"groups\":"<<groups<<",\"terms\":"<<terms<<",\"blocks\":"<<blocks<<",\n\"configuration\":{\"alpha_input\":"<<alpha
@@ -129,8 +135,17 @@ int main(int argc,char** argv) {
       out<<quoted(weight+"/"+model+"/"+bin+"/"+names[j]);
     }
     out<<"],\n\"mean_pb\":[";for(std::size_t i=0;i<channels;++i)out<<(i?",":"")<<factor*result.mean[i];
+    out<<"],\n\"covariance_mode\":"<<quoted(covariance)<<",\"worker_threads\":"<<threads<<",\"batch_groups\":"<<batch_groups;
+    out<<",\n\"variance_pb2\":[";for(std::size_t i=0;i<channels;++i)out<<(i?",":"")<<factor*factor*result.variance[i];
+    if(covariance!="full") {
+      out<<"],\n\"covariance_pairs\":[";
+      for(std::size_t k=0;k<result.covariance_pairs.size();++k) {if(k)out<<',';auto pair=result.covariance_pairs[k];out<<'['<<pair.first<<','<<pair.second<<']';}
+      out<<"],\n\"covariance_values_pb2\":[";
+      for(std::size_t k=0;k<result.covariance_values.size();++k)out<<(k?",":"")<<factor*factor*result.covariance_values[k];
+    }else {
     out<<"],\n\"covariance_pb2\":[";
     for(std::size_t i=0;i<channels;++i) {if(i)out<<',';out<<'[';for(std::size_t j=0;j<channels;++j)out<<(j?",":"")<<factor*factor*result.covariance[i][j];out<<']';}
+    }
     out<<"]\n}\n";if(!out)throw std::runtime_error("Replay output write failed");
     std::cout<<"Replayed "<<groups<<" groups / "<<terms<<" terms into "<<spectrum.bins.size()<<" bins for "<<models.size()<<" models\n";
   }catch(const std::exception& e){std::cerr<<"leptonff_replay: "<<e.what()<<'\n';return 1;}

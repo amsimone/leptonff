@@ -57,6 +57,9 @@ jobs:
           -DLEPTONFF_BUILD_REFERENCE_PROGRAMS=ON
           -DLEPTONFF_BUILD_FORTRAN=${{ runner.os == 'Linux' && 'ON' || 'OFF' }}
           -DPython3_EXECUTABLE="$(command -v python3)"
+      - name: Install array binding test dependency
+        if: matrix.shared == 'ON'
+        run: python3 -m pip install numpy
       - name: Build
         run: cmake --build build --parallel 4
       - name: Test core, independent references, replay and installed consumers

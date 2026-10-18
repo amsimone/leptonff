@@ -26,7 +26,7 @@ with tempfile.TemporaryDirectory(prefix='leptonff-install-') as temp:
     shutil.move(base/'installed', base/'relocated')
     examples = ['fragmentation','convolution']
     if not a.core_only:
-        examples += ['c_api','cpp']+(['fortran'] if a.fortran else [])
+        examples += ['c_api','cpp','response_table']+(['fortran'] if a.fortran else [])
     for example in examples:
         command = ['cmake', '-S', base/'relocated/share/doc/leptonff/examples'/example, '-B', base/example,
                    '-DCMAKE_PREFIX_PATH='+str(base/'relocated'), '-DCMAKE_CXX_COMPILER='+a.cxx]
@@ -36,9 +36,9 @@ with tempfile.TemporaryDirectory(prefix='leptonff-install-') as temp:
         run(['cmake', '--build', base/example, '--parallel', '2'])
         executable = {'fragmentation':'leptonff_fragmentation_example',
                       'convolution':'leptonff_convolution_example',
-                      'c_api':'decay_example','cpp':'decay_cpp','fortran':'decay_fortran'}[example]
+                      'c_api':'decay_example','cpp':'decay_cpp','fortran':'decay_fortran','response_table':'response_example'}[example]
         output = run([base/example/executable])
-        expected = {'fragmentation':'fragmentation moment','convolution':'convolution'}.get(example,'Born acceptance')
+        expected = {'fragmentation':'fragmentation moment','convolution':'convolution','response_table':'matched contraction'}.get(example,'Born acceptance')
         if expected not in output:
             raise AssertionError('Installed consumer did not evaluate the documented example')
         print(example, output.strip())
@@ -58,7 +58,7 @@ with tempfile.TemporaryDirectory(prefix='leptonff-install-') as temp:
     if a.core_only:
         probe=base/'missing-component'
         probe.mkdir()
-        (probe/'CMakeLists.txt').write_text('cmake_minimum_required(VERSION 3.16)\nproject(probe LANGUAGES NONE)\nfind_package(leptonff 0.26 CONFIG REQUIRED COMPONENTS matched)\n')
+        (probe/'CMakeLists.txt').write_text('cmake_minimum_required(VERSION 3.16)\nproject(probe LANGUAGES NONE)\nfind_package(leptonff 0.27 CONFIG REQUIRED COMPONENTS matched)\n')
         result=subprocess.run(['cmake','-S',str(probe),'-B',str(probe/'build'),
             '-DCMAKE_PREFIX_PATH='+str(base/'relocated')],capture_output=True,text=True)
         if result.returncode==0:

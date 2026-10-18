@@ -1,0 +1,455 @@
+{
+  "schema": 1,
+  "scope": "Local performance probes, not a prediction of full QCD wall time or a phenomenological precision claim",
+  "baseline": {
+    "version": "0.26.0",
+    "commit": "064c24b0f9a08c37db78095ff006150bf77abef6"
+  },
+  "optimized": {
+    "version": "0.27.0",
+    "state": "local working tree",
+    "code_sha256": "532bd0d95033a081b73ef1fe8591f0ca9b751b87cfd96a0ec724665ddf99aea3",
+    "code_sha256_method": "SHA256 of sorted CMakeLists.txt and src/include/bindings/apps/examples/cmake code files, each path + NUL + content + NUL"
+  },
+  "platform": {
+    "cpu": "Apple M5 Pro",
+    "os": "macOS 26.6.2",
+    "compiler": "AppleClang 21.0.0",
+    "flags": "-O3 -DNDEBUG -std=c++17",
+    "real_bytes": 8
+  },
+  "settings": {
+    "grid_bins": 4096,
+    "log_span": 40,
+    "hard_samples": 16,
+    "minimum_z": 0.0001,
+    "seed": 42,
+    "parent_px": 20,
+    "parent_py": 0,
+    "parent_pz": 30,
+    "rest_frame_lepton_cosine": "sqrt(0.19)",
+    "parent_mass_W": 80.4,
+    "parent_mass_Z": 91.1876
+  },
+  "measurements": [
+    {
+      "mode": "legacy_api",
+      "name": "W_projected_hard",
+      "baseline_ms": 0.0062936771,
+      "optimized_ms": 6.63625e-05,
+      "speedup": 94.83785420983237,
+      "baseline_repeats": 20000,
+      "optimized_repeats": 20000
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_LL_construct",
+      "baseline_ms": 2.72225,
+      "optimized_ms": 2.849792,
+      "speedup": 0.9552451547340999,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_LL_bins17",
+      "baseline_ms": 0.16295456,
+      "optimized_ms": 0.10745615,
+      "speedup": 1.5164749528063308,
+      "baseline_repeats": 1535,
+      "optimized_repeats": 2327
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_LL_bins62",
+      "baseline_ms": 0.50817598,
+      "optimized_ms": 0.28850082,
+      "speedup": 1.7614368652401058,
+      "baseline_repeats": 492,
+      "optimized_repeats": 867
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_LL_response_8x16",
+      "baseline_ms": 3.805417,
+      "optimized_ms": 0.3963335,
+      "speedup": 9.601552732736446,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_NLL_construct",
+      "baseline_ms": 4.630625,
+      "optimized_ms": 3.947584,
+      "speedup": 1.1730276037191356,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_NLL_bins17",
+      "baseline_ms": 0.15971033,
+      "optimized_ms": 0.10871116,
+      "speedup": 1.4691254329362322,
+      "baseline_repeats": 1566,
+      "optimized_repeats": 2300
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_NLL_bins62",
+      "baseline_ms": 0.51185106,
+      "optimized_ms": 0.28862851,
+      "speedup": 1.7733905080963763,
+      "baseline_repeats": 489,
+      "optimized_repeats": 867
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_NLL_response_8x16",
+      "baseline_ms": 4.1870205,
+      "optimized_ms": 0.4173545,
+      "speedup": 10.032287899136106,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_coupled_construct",
+      "baseline_ms": 51.95325,
+      "optimized_ms": 53.5855,
+      "speedup": 0.969539334334848,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_coupled_bins17",
+      "baseline_ms": 0.1914309,
+      "optimized_ms": 0.13649165,
+      "speedup": 1.40250997039013,
+      "baseline_repeats": 1306,
+      "optimized_repeats": 1832
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_coupled_bins62",
+      "baseline_ms": 0.61427211,
+      "optimized_ms": 0.39512125,
+      "speedup": 1.5546420497505515,
+      "baseline_repeats": 407,
+      "optimized_repeats": 633
+    },
+    {
+      "mode": "legacy_api",
+      "name": "W_coupled_response_8x16",
+      "baseline_ms": 4.108625,
+      "optimized_ms": 0.649625,
+      "speedup": 6.324610352126227,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_projected_hard",
+      "baseline_ms": 0.012086996,
+      "optimized_ms": 0.00011446665,
+      "speedup": 105.59403983605704,
+      "baseline_repeats": 20000,
+      "optimized_repeats": 20000
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_LL_construct",
+      "baseline_ms": 2.554791,
+      "optimized_ms": 2.477208,
+      "speedup": 1.0313187265663601,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_LL_bins17",
+      "baseline_ms": 0.43758188,
+      "optimized_ms": 0.20038742,
+      "speedup": 2.1836793946446336,
+      "baseline_repeats": 572,
+      "optimized_repeats": 1248
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_LL_bins65",
+      "baseline_ms": 1.7542984,
+      "optimized_ms": 0.64434826,
+      "speedup": 2.722593524191405,
+      "baseline_repeats": 143,
+      "optimized_repeats": 388
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_LL_response_8x16",
+      "baseline_ms": 16.466896,
+      "optimized_ms": 2.8994585,
+      "speedup": 5.6793004624829075,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_NLL_construct",
+      "baseline_ms": 4.09075,
+      "optimized_ms": 3.733084,
+      "speedup": 1.0958097915825094,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_NLL_bins17",
+      "baseline_ms": 0.42824558,
+      "optimized_ms": 0.20509303,
+      "speedup": 2.088055259605848,
+      "baseline_repeats": 584,
+      "optimized_repeats": 1220
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_NLL_bins65",
+      "baseline_ms": 1.6058929,
+      "optimized_ms": 0.66910639,
+      "speedup": 2.400056140548889,
+      "baseline_repeats": 156,
+      "optimized_repeats": 374
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_NLL_response_8x16",
+      "baseline_ms": 15.924625,
+      "optimized_ms": 2.771604,
+      "speedup": 5.745635018566866,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_coupled_construct",
+      "baseline_ms": 51.701125,
+      "optimized_ms": 54.373417,
+      "speedup": 0.9508529692000044,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_coupled_bins17",
+      "baseline_ms": 0.98003564,
+      "optimized_ms": 0.44075264,
+      "speedup": 2.223550243510737,
+      "baseline_repeats": 256,
+      "optimized_repeats": 568
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_coupled_bins65",
+      "baseline_ms": 3.9755913,
+      "optimized_ms": 1.5685784,
+      "speedup": 2.534518708150004,
+      "baseline_repeats": 63,
+      "optimized_repeats": 160
+    },
+    {
+      "mode": "legacy_api",
+      "name": "Z_coupled_response_8x16",
+      "baseline_ms": 25.842312,
+      "optimized_ms": 3.847354,
+      "speedup": 6.716905176908597,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "W_projected_hard",
+      "baseline_ms": 0.0059176875,
+      "optimized_ms": 6.53375e-05,
+      "speedup": 90.57107327338818,
+      "baseline_repeats": 20000,
+      "optimized_repeats": 20000
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "W_coupled_construct",
+      "baseline_ms": 378.92279,
+      "optimized_ms": 387.14396,
+      "speedup": 0.9787645660286164,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "W_coupled_bins17",
+      "baseline_ms": 0.21336394,
+      "optimized_ms": 0.15462675,
+      "speedup": 1.3798643507672508,
+      "baseline_repeats": 1172,
+      "optimized_repeats": 1617
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "W_coupled_bins62",
+      "baseline_ms": 0.70632465,
+      "optimized_ms": 0.4391008,
+      "speedup": 1.6085706288852126,
+      "baseline_repeats": 355,
+      "optimized_repeats": 570
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "W_coupled_response_8x16",
+      "baseline_ms": 5.9044375,
+      "optimized_ms": 2.089208,
+      "speedup": 2.826160679070729,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "Z_projected_hard",
+      "baseline_ms": 0.012023917,
+      "optimized_ms": 0.00013018335,
+      "speedup": 92.36140412733272,
+      "baseline_repeats": 20000,
+      "optimized_repeats": 20000
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "Z_coupled_construct",
+      "baseline_ms": 373.75738,
+      "optimized_ms": 383.16583,
+      "speedup": 0.9754454879235969,
+      "baseline_repeats": 1,
+      "optimized_repeats": 1
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "Z_coupled_bins17",
+      "baseline_ms": 0.90453761,
+      "optimized_ms": 0.45659816,
+      "speedup": 1.981036476362498,
+      "baseline_repeats": 277,
+      "optimized_repeats": 548
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "Z_coupled_bins65",
+      "baseline_ms": 3.8868449,
+      "optimized_ms": 1.5666578,
+      "speedup": 2.4809788710719087,
+      "baseline_repeats": 65,
+      "optimized_repeats": 160
+    },
+    {
+      "mode": "leptonic_thresholds",
+      "name": "Z_coupled_response_8x16",
+      "baseline_ms": 27.460334,
+      "optimized_ms": 5.0281455,
+      "speedup": 5.46132445849071,
+      "baseline_repeats": 2,
+      "optimized_repeats": 2
+    }
+  ],
+  "batch_and_response_measurements": [
+    {
+      "process": "W",
+      "model": "photonic_nll",
+      "bins": 17,
+      "construct_ms": 4.06792,
+      "point_ms": 0.116833,
+      "batch4_ms_per_point": 0.0348238,
+      "response_ms": 0.433208,
+      "cached_contract_ms": 0.00376599
+    },
+    {
+      "process": "W",
+      "model": "photonic_nll",
+      "bins": 62,
+      "construct_ms": 4.06792,
+      "point_ms": 0.280284,
+      "batch4_ms_per_point": 0.0850418,
+      "response_ms": 1.47265,
+      "cached_contract_ms": 0.01279
+    },
+    {
+      "process": "W",
+      "model": "leptonic_nll",
+      "bins": 17,
+      "construct_ms": 374.713,
+      "point_ms": 0.161525,
+      "batch4_ms_per_point": 0.0477729,
+      "response_ms": 2.3475,
+      "cached_contract_ms": 0.00426477
+    },
+    {
+      "process": "W",
+      "model": "leptonic_nll",
+      "bins": 62,
+      "construct_ms": 374.713,
+      "point_ms": 0.43675,
+      "batch4_ms_per_point": 0.126566,
+      "response_ms": 8.28813,
+      "cached_contract_ms": 0.0129019
+    },
+    {
+      "process": "Z",
+      "model": "photonic_nll",
+      "bins": 17,
+      "construct_ms": 3.72125,
+      "point_ms": 0.2055,
+      "batch4_ms_per_point": 0.069698,
+      "response_ms": 2.97496,
+      "cached_contract_ms": 0.00365568
+    },
+    {
+      "process": "Z",
+      "model": "photonic_nll",
+      "bins": 65,
+      "construct_ms": 3.72125,
+      "point_ms": 0.749831,
+      "batch4_ms_per_point": 0.221777,
+      "response_ms": 10.9234,
+      "cached_contract_ms": 0.0123472
+    },
+    {
+      "process": "Z",
+      "model": "leptonic_nll",
+      "bins": 17,
+      "construct_ms": 389.489,
+      "point_ms": 0.452404,
+      "batch4_ms_per_point": 0.150011,
+      "response_ms": 4.99052,
+      "cached_contract_ms": 0.00353129
+    },
+    {
+      "process": "Z",
+      "model": "leptonic_nll",
+      "bins": 65,
+      "construct_ms": 389.489,
+      "point_ms": 1.5983,
+      "batch4_ms_per_point": 0.507738,
+      "response_ms": 22.3077,
+      "cached_contract_ms": 0.0124802
+    }
+  ],
+  "regression_comparison": {
+    "cases": 216,
+    "values": 19440,
+    "grid_bins": 128,
+    "hard_samples": 4,
+    "max_absolute_shift": 1.1978606995199925e-10
+  },
+  "validation": {
+    "scientific_suite": "78 tests passed, including targeted reruns after installation-version correction",
+    "core_only": "12 tests passed",
+    "address_and_undefined_sanitizers": "5 tests passed",
+    "mcfm_adapter": "rate/spectrum identity in 6 process/model configurations, 9 points each"
+  }
+}

@@ -1,5 +1,14 @@
 # Bare-muon W/Z production with lepton fragmentation — implementation plan
 
+Architecture implementation (0.27): analytic projected hard actions, exact
+fraction-pair stencils, reusable compiled measurements, deterministic threaded
+replay, full/block/selected/diagonal covariance, shared C/Python measurement
+views, explicit matched coupling inputs, batch C/Fortran/Python APIs, and
+persisted tensor responses at explicit production nodes. See the
+[performance and reuse guide](docs/manual/performance.md). Response interpolation
+with an independent error budget and the native DYTurbo production adapter
+remain separate work. These changes do not launch a new QCD campaign.
+
 Package refactor (0.26): standalone fragmentation/evolution core, explicit
 alpha inputs, distribution convolution/bin APIs, numerical Python bindings,
 installed Fortran module, scientific manual and canonical benchmarks. See

@@ -1,5 +1,6 @@
 #include "leptonff/spin_decay.hpp"
 #include "leptonff/coupled_lab.hpp"
+#include "hard_primitive.hpp"
 #include <algorithm>
 #include <cmath>
 #include <stdexcept>
@@ -139,14 +140,18 @@ SpinRadiativePoint kinematics(SpinDecay kind,Real M,Real m,Real z,Real c) {
           {g*(e2-v*k*c),-px,0,g*(-k*c+v*e2)},
           {M*(1-z)/2,0,0,M*(1-z)/2},{}};
 }
-Real interval_hard(SpinDecay kind,Real lo,Real hi,Real M,Real mu) {
-  if(lo>=1 || hi<=lo)return 0;
-  if(lo<0 || hi==1)throw std::invalid_argument("Infrared unsafe hard interval");
-  const auto f=[&](Real z){return projected_decay_hard_kernel(kind,z,M,mu);};
-  if(hi>1)return -integrate(f,0,lo,{1e-8L,1e-8L,8192}).value;
-  return integrate(f,lo,hi,{1e-8L,1e-8L,8192}).value;
-}
 } // namespace
+
+Real projected_decay_hard_interval(SpinDecay kind,Real lo,Real hi,Real M,Real mu) {
+  for(Real x:{lo,hi,M,mu})if(!std::isfinite(x))throw std::invalid_argument("Non-finite hard interval");
+  if(lo<0 || hi<0 || M<=0 || mu<=0)throw std::invalid_argument("Invalid hard interval");
+  if(lo>=1 || hi<=lo)return 0;
+  if(hi==1)throw std::invalid_argument("Infrared unsafe hard interval");
+  const bool charged=kind!=SpinDecay::neutral_vector;
+  const Real log=2*std::log(M/mu);
+  return (hi>1?0:detail::projected_hard_primitive(hi,charged,log))
+    -detail::projected_hard_primitive(lo,charged,log);
+}
 
 Real spin_trace(const SpinTensor& t) {
   return (t[0][0]+t[1][1]+t[2][2]).real();
@@ -247,14 +252,14 @@ Real w_projected_decay_hard(const FourVector& mu,const FourVector& nu,Real scale
      (cuts.neutrino_pt_min>0 && nu.pt()<=cuts.neutrino_pt_min))return 0;
   Real lo=cuts.muon_pt_min/mu.pt();
   if(cuts.transverse_mass_min>0)lo=std::max(lo,std::pow(cuts.transverse_mass_min/transverse_mass(mu,nu),2));
-  return interval_hard(SpinDecay::wminus,lo,2,invariant_mass(mu,nu),scale);
+  return projected_decay_hard_interval(SpinDecay::wminus,lo,2,invariant_mass(mu,nu),scale);
 }
 Real z_projected_decay_hard(const FourVector& a,const FourVector& b,Real scale,const FiducialCuts& cuts) {
   cuts.validate();
   if(a.pt()<=cuts.pt_min || b.pt()<=cuts.pt_min || std::abs(a.eta())>=cuts.eta_max || std::abs(b.eta())>=cuts.eta_max)return 0;
   const Real M=invariant_mass(a,b),lo=std::pow(cuts.mass_min/M,2),hi=std::pow(cuts.mass_max/M,2);
-  return interval_hard(SpinDecay::neutral_vector,std::max(cuts.pt_min/a.pt(),lo),hi,M,scale)
-        +interval_hard(SpinDecay::neutral_vector,std::max(cuts.pt_min/b.pt(),lo),hi,M,scale);
+  return projected_decay_hard_interval(SpinDecay::neutral_vector,std::max(cuts.pt_min/a.pt(),lo),hi,M,scale)
+        +projected_decay_hard_interval(SpinDecay::neutral_vector,std::max(cuts.pt_min/b.pt(),lo),hi,M,scale);
 }
 std::array<SpinTensor,2> decay_hard_geometry_pair(SpinDecay kind,Real M,Real z,Real c,const SpatialRotation& rotation,
     const FourVector& parent,const DecayMeasurement& measurement,const DecayMeasurement& evolved,Real reference) {

@@ -38,6 +38,9 @@ Real spin_photon_ward_residual(SpinDecay,Real M,Real m,Real z,Real c);
 // is transferred to the branching ratio. Kernels below are whole-plus,
 // per charged leg; the W kernel includes its additional finite W term.
 Real projected_decay_hard_kernel(SpinDecay,Real z,Real M,Real mu_frag);
+// Exact whole-plus action on a strict interval. upper>1 includes its endpoint;
+// upper==1 is infrared unsafe. No adaptive integration in the event loop.
+Real projected_decay_hard_interval(SpinDecay,Real lower,Real upper,Real M,Real mu_frag);
 Real w_projected_decay_hard(const FourVector&,const FourVector&,
                            Real mu_frag,const WLabCuts& = {});
 Real z_projected_decay_hard(const FourVector&,const FourVector&,

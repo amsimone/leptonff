@@ -107,4 +107,27 @@ Real LabSpectrum::bin(std::size_t k,const std::vector<Real>& values) const {
   const auto& b=bins.at(k);
   return (b.positive<0?0:values.at(b.positive))-(b.negative<0?0:values.at(b.negative));
 }
+
+MeasurementPlan::MeasurementPlan(bool neutral,LabSpectrum spectrum):neutral_(neutral),spectrum_(std::move(spectrum)) {
+  if(spectrum_.selections.empty())throw std::invalid_argument("Empty measurement plan");
+  for(const auto& s:spectrum_.selections){s.w.validate();s.z.validate();}
+  const auto size=spectrum_.selections.size();representatives_.resize(size);
+  for(const auto& b:spectrum_.bins)if(b.positive < -1 || b.negative < -1 ||
+      b.positive>=static_cast<int>(size) || b.negative>=static_cast<int>(size))throw std::invalid_argument("Invalid measurement bin index");
+  for(std::size_t i=0;i<size;++i) {
+    const auto& a=spectrum_.selections[i];std::size_t best=i;
+    for(std::size_t j=0;j<size;++j) {
+      const auto& b=spectrum_.selections[j];
+      const bool equal=neutral?(a.z.pt_min==b.z.pt_min && a.z.mass_min==b.z.mass_min && a.z.mass_max==b.z.mass_max):
+        (a.w.muon_pt_min==b.w.muon_pt_min && a.w.neutrino_pt_min==b.w.neutrino_pt_min && a.w.transverse_mass_min==b.w.transverse_mass_min);
+      if(equal && (neutral?b.z.eta_max>spectrum_.selections[best].z.eta_max:b.w.muon_eta_max>spectrum_.selections[best].w.muon_eta_max))best=j;
+    }
+    representatives_[i]=best;
+  }
+}
+bool MeasurementPlan::accepts_eta(std::size_t i,const FourVector& a,const FourVector& b) const {
+  const auto& s=spectrum_.selections.at(i);
+  return neutral_?(a.pt()>0 && b.pt()>0 && std::abs(a.eta())<s.z.eta_max && std::abs(b.eta())<s.z.eta_max):
+    (a.pt()>0 && std::abs(a.eta())<s.w.muon_eta_max);
+}
 } // namespace leptonff

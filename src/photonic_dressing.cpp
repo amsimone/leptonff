@@ -1,5 +1,6 @@
 #include "leptonff/photonic_dressing.hpp"
 #include "leptonff/vector_decay.hpp"
+#include "hard_primitive.hpp"
 #include <algorithm>
 #include <cmath>
 #include <numeric>
@@ -11,25 +12,13 @@ std::vector<Real> add(const std::vector<Real>& a,const std::vector<Real>& b) {
   auto out=a;for(std::size_t k=0;k<out.size();++k)out[k]+=b[k];return out;
 }
 std::vector<Real> delta(std::size_t n) {std::vector<Real> out(n,0);out[0]=1;return out;}
-// Primitive from z=0 to exp(-u), per lepton, of P(z)*(log z+2 log(1-z)).
-// Two branches avoid far-tail subtraction of constants and soft cancellation.
-Real primitive(Real u,bool w_extra) {
-  const Real z=std::exp(-u),t=-std::expm1(-u);
-  const Real l=u<.5L?std::log(t):std::log1p(-z);
-  if(w_extra)return 2*l+4*z/3+z*z/3;
-  if(u>=1)return (2*l+z+z*z/2)*u-2*real_dilogarithm(z)+4*z+3*z*z/4
-                 -2*l*l+(3-2*z-z*z)*l;
-  const Real lz=2*real_dilogarithm(t)+(z+z*z/2)*u+z+z*z/4;
-  const Real ls=-2*l*l+(4*t-t*t)*l-4*t+t*t/2;
-  return lz+ls-std::pow(std::acos(-1.L),2)/3+3.5L;
-}
 std::vector<Real> project(const LLGrid& grid,bool extra) {
   grid.validate();std::vector<Real> out(grid.bins,0);
   Real sum=0,correction=0;
   for(std::size_t k=1;k<grid.bins;++k) {
     const Real lo=std::max(grid.soft_log_cutoff,(k-.5L)*grid.spacing()),hi=(k+.5L)*grid.spacing();
     if(lo>=hi)continue;
-    out[k]=primitive(lo,extra)-primitive(hi,extra);
+    out[k]=detail::hard_primitive(lo,extra)-detail::hard_primitive(hi,extra);
     const Real y=out[k]-correction,next=sum+y;correction=(next-sum)-y;sum=next;
   }
   out[0]=-sum;return out;
@@ -58,7 +47,7 @@ Real w_action(const FourVector& mu,const FourVector& nu,const WLabCuts& cuts,con
   return table.interval(lo);
 }
 Real z_action(const FourVector& a,const FourVector& b,const FiducialCuts& cuts,
-              const SignedFractionTable& first,const SignedFractionTable& second) {
+              const SignedFractionTable& first,const SignedFractionTable& second,FractionPairWorkspace* workspace=nullptr) {
   massless(a);massless(b);cuts.validate();
   if(cuts.pt_min<=0)throw std::invalid_argument("Photonic lab Z action requires positive pT support");
   if(a.pt()==0 || b.pt()==0 || std::abs(a.eta())>=cuts.eta_max || std::abs(b.eta())>=cuts.eta_max)return 0;
@@ -66,12 +55,7 @@ Real z_action(const FourVector& a,const FourVector& b,const FiducialCuts& cuts,
   if(l1>=1 || l2>=1)return 0;
   const Real M=invariant_mass(a,b);if(M==0)return 0;
   const Real lo=std::pow(cuts.mass_min/M,2),hi=std::pow(cuts.mass_max/M,2);
-  Real sum=0;
-  for(std::size_t k=0;k<first.fractions().size() && first.fractions()[k]>l1;++k) {
-    const Real z=first.fractions()[k];
-    sum+=first.weights()[k]*second.interval(std::max(l2,lo/z),hi/z);
-  }
-  return sum;
+  return workspace?workspace->apply(first,second,l1,l2,lo,hi):first.pair(second,l1,l2,lo,hi);
 }
 }
 PhotonicLabDressing::PhotonicLabDressing(const QEDParameters& q,const LLGrid& grid,Real minimum,PhotonicAccuracy accuracy)
@@ -102,9 +86,10 @@ Real PhotonicLabDressing::w_projected_shift(const FourVector& a,const FourVector
 Real PhotonicLabDressing::z_projected_shift(const FourVector& a,const FourVector& b,const FiducialCuts& c) const {
   if(evolution_.evolution().time()==0)return 0;
   const Real log_scale=2*std::log(invariant_mass(a,b)/evolution_.parameters().mu_frag);
-  return z_action(a,b,c,hu_,u_)+z_action(a,b,c,u_,hu_)
-        -z_action(a,b,c,h_,delta_)-z_action(a,b,c,delta_,h_)
-        +log_scale*(z_action(a,b,c,pu_,u_)+z_action(a,b,c,u_,pu_)
-                   -z_action(a,b,c,p_,delta_)-z_action(a,b,c,delta_,p_));
+  FractionPairWorkspace workspace;
+  return z_action(a,b,c,hu_,u_,&workspace)+z_action(a,b,c,u_,hu_,&workspace)
+        -z_action(a,b,c,h_,delta_,&workspace)-z_action(a,b,c,delta_,h_,&workspace)
+        +log_scale*(z_action(a,b,c,pu_,u_,&workspace)+z_action(a,b,c,u_,pu_,&workspace)
+                   -z_action(a,b,c,p_,delta_,&workspace)-z_action(a,b,c,delta_,p_,&workspace));
 }
 } // namespace leptonff

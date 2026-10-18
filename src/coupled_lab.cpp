@@ -42,14 +42,14 @@ Real w_action(const FourVector& mu,const FourVector& nu,const WLabCuts& c,const 
   return t.interval(lo);
 }
 Real z_action(const FourVector& a,const FourVector& b,const FiducialCuts& c,
-              const SignedFractionTable& first,const SignedFractionTable& second) {
+              const SignedFractionTable& first,const SignedFractionTable& second,FractionPairWorkspace* workspace=nullptr) {
   massless(a);massless(b);c.validate();
   if(c.pt_min<=0 || c.mass_min<=0)throw std::invalid_argument("Coupled Z hard action needs positive pT and pair mass support");
   if(a.pt()==0 || b.pt()==0 || std::abs(a.eta())>=c.eta_max || std::abs(b.eta())>=c.eta_max)return 0;
   const Real l1=c.pt_min/a.pt(),l2=c.pt_min/b.pt();if(l1>=1 || l2>=1)return 0;
   const Real M=invariant_mass(a,b);if(M==0)return 0;
   const Real lo=std::pow(c.mass_min/M,2),hi=std::pow(c.mass_max/M,2);
-  return first.pair(second,l1,l2,lo,hi);
+  return workspace?workspace->apply(first,second,l1,l2,lo,hi):first.pair(second,l1,l2,lo,hi);
 }
 }
 Real projected_decay_photon_kernel(SpinDecay kind,Real x,Real M,Real scale) {
@@ -129,7 +129,8 @@ CoupledLabProjection CoupledLabDressing::w_projected(const FourVector& a,const F
 }
 CoupledLabProjection CoupledLabDressing::z_projected(const FourVector& a,const FourVector& b,const FiducialCuts& c) const {
   if(kind_!=SpinDecay::neutral_vector)throw std::invalid_argument("Z action on charged coupled operator");
-  auto r=projection(invariant_mass(a,b),[&](Table i,Table j){return z_action(a,b,c,t_[i],t_[j]);},true);
+  FractionPairWorkspace workspace;
+  auto r=projection(invariant_mass(a,b),[&](Table i,Table j){return z_action(a,b,c,t_[i],t_[j],&workspace);},true);
   r.continuum=z_projected_decay_hard(a,b,evolution_.parameters().mu_frag,c);return r;
 }
 Real CoupledLabDressing::w_real(const FourVector& mu,const FourVector& nu,const FourVector& photon,const WLabCuts& c,bool first) const {
@@ -138,7 +139,8 @@ Real CoupledLabDressing::w_real(const FourVector& mu,const FourVector& nu,const 
 }
 Real CoupledLabDressing::z_real(const FourVector& minus,const FourVector& plus,const FourVector& photon,const FiducialCuts& c,bool first) const {
   if(kind_!=SpinDecay::neutral_vector)throw std::invalid_argument("Z action on charged coupled operator");
-  const auto F=[&](const FourVector& a,const FourVector& b,Table i,Table j){return z_action(a,b,c,t_[i],t_[j]);};
+  FractionPairWorkspace workspace;
+  const auto F=[&](const FourVector& a,const FourVector& b,Table i,Table j){return z_action(a,b,c,t_[i],t_[j],&workspace);};
   if(first)return F(minus,plus,c1,identity)+F(minus,plus,identity,c1)
       +F(photon,minus,cg,identity)+F(photon,plus,cg,identity);
   if(t_[same].measure()==FractionMeasure::conservative_cells)
